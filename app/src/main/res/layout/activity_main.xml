@@ -150,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:layout_marginHorizontal="20dp"
-            android:background="@drawable/shape_main_destination_guide_btn"
+            android:background="@drawable/shape_white_btn"
             android:fontFamily="@font/noto_sans_kr_bold"
             android:includeFontPadding="false"
             android:paddingTop="12dp"
