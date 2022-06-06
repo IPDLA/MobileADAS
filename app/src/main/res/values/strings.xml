@@ -1,7 +1,16 @@
 <resources>
     <string name="app_name">MobileADAS</string>
+
+    <!-- MainActivity -->
     <string name="main_speed_title">현재 속도</string>
     <string name="main_destination_title">목적지</string>
     <string name="main_time_title">예상 도착 시간</string>
     <string name="main_speed_unit">km/h</string>
+
+    <!-- DestinationActivity -->
+    <string name="destination_set">네</string>
+    <string name="destination_reset">다시 찾기</string>
+    <string name="destination_title">어디로 갈까요?</string>
+    <string name="destination_location_head">현재 위치가</string>
+    <string name="destination_location_tail">맞나요?</string>
 </resources>
