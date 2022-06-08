@@ -6,11 +6,19 @@
     <string name="main_destination_title">목적지</string>
     <string name="main_time_title">예상 도착 시간</string>
     <string name="main_speed_unit">km/h</string>
+    <string name="main_guide_on">경로 안내 종료</string>
+    <string name="main_guide_off">경로 안내</string>
 
     <!-- DestinationActivity -->
     <string name="destination_set">네</string>
     <string name="destination_reset">다시 찾기</string>
     <string name="destination_title">어디로 갈까요?</string>
-    <string name="destination_location_head">현재 위치가</string>
+    <string name="destination_location_head">목적지가</string>
     <string name="destination_location_tail">맞나요?</string>
+    <string name="destination_find">찾기</string>
+
+    <!-- MainDialogFragment -->
+    <string name="dialog_confirm">확인</string>
+    <string name="dialog_cancel">취소</string>
+    <string name="dialog_content">경로 안내를 종료하시겠습니까?</string>
 </resources>

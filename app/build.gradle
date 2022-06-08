@@ -60,4 +60,7 @@ dependencies {
     // ViewModel(by viewModels 사용용도)
     implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation 'androidx.activity:activity-ktx:1.4.0'
+
+    // location
+    implementation "com.google.android.gms:play-services-location:19.0.1"
 }
