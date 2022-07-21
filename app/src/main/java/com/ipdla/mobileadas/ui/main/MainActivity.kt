@@ -64,6 +64,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initLocationRequest() {
         locationRequest = LocationRequest.create().apply {
             interval = 500
+            priority = Priority.PRIORITY_HIGH_ACCURACY
         }
     }
 
