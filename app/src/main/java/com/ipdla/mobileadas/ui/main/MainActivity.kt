@@ -49,7 +49,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     if (location.hasSpeed()) {
                         if (::lastLocation.isInitialized) {
                             val deltaTime = (location.time - lastLocation.time) / 1000.0
-                            speed = abs(lastLocation.distanceTo(location) / deltaTime)
+                            speed = abs(lastLocation.distanceTo(location) / deltaTime) * 4.0
                         }
                         lastLocation = location
                         Log.d(this@MainActivity.toString(), speed.toString())
