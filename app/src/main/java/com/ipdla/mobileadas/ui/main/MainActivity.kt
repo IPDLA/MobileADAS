@@ -31,7 +31,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.mainViewModel = mainViewModel
-
         initLocationCallback()
         initLocationRequest()
         initFusedLocationClient()
@@ -46,15 +45,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 val location = locationResult.lastLocation
                 if (location != null) {
                     var speed = 0.0
-                    if (location.hasSpeed()) {
-                        if (::lastLocation.isInitialized) {
-                            val deltaTime = (location.time - lastLocation.time) / 1000.0
-                            speed = abs(lastLocation.distanceTo(location) / deltaTime) * 4.0
-                        }
-                        lastLocation = location
-                        Log.d(this@MainActivity.toString(), speed.toString())
-                        mainViewModel.initSpeed(speed.toInt())
+                    if (::lastLocation.isInitialized) {
+                        val deltaTime = (location.time - lastLocation.time) / 1000.0
+                        speed = abs(lastLocation.distanceTo(location) / deltaTime) * 4.0
                     }
+                    lastLocation = location
+                    Log.d(this@MainActivity.toString(), speed.toString())
+                    mainViewModel.initSpeed(speed.toInt())
                 }
                 Log.d(this@MainActivity.toString(), location.toString())
             }
