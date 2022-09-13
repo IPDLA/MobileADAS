@@ -27,7 +27,7 @@ class MainViewModel : ViewModel() {
     val destination: LiveData<String> = _destination
 
     private val _time = MutableLiveData(" - ")
-    val time: LiveData<String> = _time
+    val time: LiveData<String?> = _time
 
     fun initIsGuide(isGuide: Boolean) {
         _isGuide.postValue(isGuide)
@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
         _speed.postValue(speed)
     }
 
-    fun initDestination(destination: String) {
+    fun initDestination(destination: String?) {
         _destination.postValue(destination)
     }
 
