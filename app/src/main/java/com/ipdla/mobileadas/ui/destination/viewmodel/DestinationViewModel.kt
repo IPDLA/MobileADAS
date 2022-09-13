@@ -19,11 +19,11 @@ class DestinationViewModel : ViewModel() {
     }
 
     fun initDestination() {
-        TMapData().findAllPOI(destination.value,
-            TMapData.FindAllPOIListenerCallback { poiItem ->
-                destination.postValue(poiItem[0].poiName)
-                initIstTyping(false)
-            })
+        TMapData().findAllPOI(destination.value
+        ) { poiItem ->
+            destination.postValue(poiItem[0].poiName)
+            initIstTyping(false)
+        }
 
     }
 
