@@ -1,11 +1,15 @@
 package com.ipdla.mobileadas.ui.main
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorInflater
+import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -21,6 +25,7 @@ import kotlin.math.abs
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
+    private lateinit var animationColorChange: Animator
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -38,6 +43,36 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initActivityResultLauncher()
         initGuideBtnClickListener()
         initSoundBtnClickListener()
+        initCautionAnimator()
+        initIsCautionObserver()
+
+    }
+
+    private fun initCautionAnimator() {
+        animationColorChange =
+            AnimatorInflater.loadAnimator(this, R.animator.animator_caution).apply {
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator?) {
+                        super.onAnimationStart(animation)
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        super.onAnimationEnd(animation)
+                    }
+                })
+
+                setTarget(binding.layoutMain)
+            }
+    }
+
+    private fun initIsCautionObserver() {
+        mainViewModel.isCaution.observe(this) {
+            if(mainViewModel.isCaution.value == true) {
+                animationColorChange.start()
+            } else {
+                animationColorChange.end()
+            }
+        }
     }
 
     private fun initLocationCallback() {
@@ -113,6 +148,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initSoundBtnClickListener() {
         binding.btnMainSound.setOnClickListener {
             mainViewModel.initIsSoundOn(!mainViewModel.isSoundOn.value!!)
+//            mainViewModel.initIsCaution(!mainViewModel.isCaution.value!!) // test
         }
     }
 

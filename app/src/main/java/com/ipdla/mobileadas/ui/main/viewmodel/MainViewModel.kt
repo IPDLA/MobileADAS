@@ -29,6 +29,10 @@ class MainViewModel : ViewModel() {
     private val _time = MutableLiveData(" - ")
     val time: LiveData<String?> = _time
 
+    fun initIsCaution(isCaution: Boolean) {
+        _isCaution.postValue(isCaution)
+    }
+
     fun initIsGuide(isGuide: Boolean) {
         _isGuide.postValue(isGuide)
     }
