@@ -17,17 +17,11 @@ class MainViewModel : ViewModel() {
     private val _mainImg = MutableLiveData<String>()
     val mainImg: LiveData<String> = _mainImg
 
-    private val _subImg = MutableLiveData<String>()
-    val subImg: LiveData<String> = _subImg
-
     private val _speed = MutableLiveData(0)
     val speed: LiveData<Int> = _speed
 
     private val _destination = MutableLiveData(" - ")
     val destination: LiveData<String> = _destination
-
-    private val _time = MutableLiveData(" - ")
-    val time: LiveData<String?> = _time
 
     fun initIsCaution(isCaution: Boolean) {
         _isCaution.postValue(isCaution)
@@ -47,9 +41,5 @@ class MainViewModel : ViewModel() {
 
     fun initDestination(destination: String?) {
         _destination.postValue(destination)
-    }
-
-    fun initTime(time: String) {
-        _time.postValue(time)
     }
 }

@@ -50,13 +50,13 @@ class MainDialogFragment : DialogFragment() {
         binding.tvMainDialogConfirm.setOnClickListener {
             mainViewModel.initIsGuide(false)
             mainViewModel.initDestination(" - ")
-            mainViewModel.initTime(" - ")
             dismiss()
         }
     }
 
     private fun initCancelTextClickListener() {
         binding.tvMainDialogCancel.setOnClickListener {
+            mainViewModel.initIsGuide(false)
             dismiss()
         }
     }
