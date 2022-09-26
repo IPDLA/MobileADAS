@@ -8,6 +8,8 @@
         <variable
             name="mainViewModel"
             type="com.ipdla.mobileadas.ui.main.viewmodel.MainViewModel" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,13 +30,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_main_img_sub"
-            android:layout_width="85dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_map_view"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="36dp"
-            android:src="@{mainViewModel.isGuide ? @drawable/ic_test : null}"
-            app:layout_constraintDimensionRatio="1:1"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="65dp"
+            android:visibility="@{mainViewModel.isGuide ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toTopOf="@+id/tv_main_speed_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_main_img_main" />
@@ -103,7 +107,7 @@
             android:text="@string/main_destination_title"
             android:textColor="@color/light_gray"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_main_time_title"
+            app:layout_constraintBottom_toTopOf="@+id/btn_main_guide"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -120,33 +124,6 @@
             android:textColor="@color/light_gray"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_main_destination_title"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_main_time_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginBottom="49dp"
-            android:fontFamily="@font/noto_sans_kr_medium"
-            android:includeFontPadding="false"
-            android:text="@string/main_time_title"
-            android:textColor="@color/light_gray"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_main_guide"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_main_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:fontFamily="@font/noto_sans_kr_medium"
-            android:includeFontPadding="false"
-            android:text="@{mainViewModel.time}"
-            android:textColor="@color/light_gray"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_main_time_title"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -167,12 +144,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_test"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            app:layout_constraintTop_toBottomOf="@+id/iv_main_img_main" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
