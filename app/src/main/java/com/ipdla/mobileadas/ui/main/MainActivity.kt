@@ -116,6 +116,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                             tMapPolyLine.lineWidth = 30f
                             tMapPolyLine.outLineWidth = 50f
                             tMapView.addTMapPolyLine("Line1", tMapPolyLine)
+                            tMapView.setCompassMode(true)
                         }
                     }
                 }
@@ -170,7 +171,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initTMapView() {
         tMapView = TMapView(this)
         tMapView.setSKTMapApiKey(TMAP_API_KEY)
-        tMapView.setIcon(BitmapFactory.decodeResource(this.resources, R.drawable.ic_sound_off))
         tMapView.setIconVisibility(true)
         tMapView.zoomLevel = 19
         tMapView.setUserScrollZoomEnable(true)
