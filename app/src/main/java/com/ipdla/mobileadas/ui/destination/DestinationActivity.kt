@@ -41,12 +41,14 @@ class DestinationActivity :
 
     private fun initFindBtnClickListener() {
         binding.btnDestinationFind.setOnClickListener {
-            destinationViewModel.initDestination()
-            val inputMethodManager =
-                this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            this.currentFocus?.let { view ->
-                inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-                view.clearFocus()
+            if(!binding.etDestinationInput.text.isNullOrEmpty()) {
+                destinationViewModel.initDestination()
+                val inputMethodManager =
+                    this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                this.currentFocus?.let { view ->
+                    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+                    view.clearFocus()
+                }
             }
         }
     }
