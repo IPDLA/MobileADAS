@@ -3,8 +3,9 @@ package com.ipdla.mobileadas.ui.destination.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.skt.Tmap.TMapData
-import com.skt.Tmap.poi_item.TMapPOIItem
+import kotlinx.coroutines.launch
 
 class DestinationViewModel : ViewModel() {
     private val _isTyping = MutableLiveData(true)
@@ -23,12 +24,18 @@ class DestinationViewModel : ViewModel() {
     }
 
     fun initDestination() {
-        TMapData().findAllPOI(destination.value
-        ) { poiItem ->
-            destination.postValue(poiItem[0].poiName)
-            _longitude.postValue(poiItem[0].frontLon.toDouble())
-            _latitude.postValue(poiItem[0].frontLat.toDouble())
-            initIstTyping(false)
+        viewModelScope.launch {
+            kotlin.runCatching {
+                TMapData().findAllPOI(destination.value
+                )
+            }.onSuccess { poiItem ->
+                destination.postValue(poiItem[0].poiName)
+                _longitude.postValue(poiItem[0].frontLon.toDouble())
+                _latitude.postValue(poiItem[0].frontLat.toDouble())
+                initIstTyping(false)
+            }.onFailure {
+
+            }
         }
     }
 }
