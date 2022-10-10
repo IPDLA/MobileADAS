@@ -105,12 +105,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
                         CoroutineScope(IO).launch {
                             delay(3600)
+                            // 자동차 경로 안내
 //                            val tMapPolyLine =
 //                                TMapData().findPathData(presentTMapPoint, destinationPoint)
+
+                            // 보행자 경로 안내
                             val tMapPolyLine =
                                 TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
                                     presentTMapPoint,
                                     destinationPoint)
+
                             tMapPolyLine.lineColor = getColor(R.color.light_red)
                             tMapPolyLine.outLineColor = getColor(R.color.light_red)
                             tMapPolyLine.lineWidth = 30f
