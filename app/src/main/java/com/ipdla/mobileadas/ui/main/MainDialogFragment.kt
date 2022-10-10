@@ -41,7 +41,7 @@ class MainDialogFragment : DialogFragment() {
                     (resources.displayMetrics.widthPixels * 0.91).toInt(),
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                setBackgroundDrawableResource(R.drawable.shape_white_btn)
+                setBackgroundDrawableResource(R.drawable.shape_white_box)
             }
         }
     }
@@ -56,7 +56,6 @@ class MainDialogFragment : DialogFragment() {
 
     private fun initCancelTextClickListener() {
         binding.tvMainDialogCancel.setOnClickListener {
-            mainViewModel.initIsGuide(false)
             dismiss()
         }
     }

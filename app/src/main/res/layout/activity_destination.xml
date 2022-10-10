@@ -139,7 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/shape_white_btn"
+            android:background="@drawable/shape_white_box"
             android:fontFamily="@font/noto_sans_kr_bold"
             android:includeFontPadding="false"
             android:paddingTop="12dp"
