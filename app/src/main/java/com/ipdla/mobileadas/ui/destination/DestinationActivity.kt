@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.ipdla.mobileadas.BuildConfig.TMAP_API_KEY
 import com.ipdla.mobileadas.R
@@ -12,6 +13,7 @@ import com.ipdla.mobileadas.databinding.ActivityDestinationBinding
 import com.ipdla.mobileadas.ui.base.BaseActivity
 import com.ipdla.mobileadas.ui.destination.viewmodel.DestinationViewModel
 import com.ipdla.mobileadas.ui.main.MainActivity
+import com.ipdla.mobileadas.util.showToast
 import com.skt.Tmap.TMapTapi
 
 class DestinationActivity :
@@ -21,6 +23,12 @@ class DestinationActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.destinationViewModel = destinationViewModel
+
+        destinationViewModel.showErrorToast.observe(this) {
+            it.getContentIfNotHandled()?.let {
+                showToast("검색 결과가 없습니다.")
+            }
+        }
 
         setTMapTapi()
         setLayout()
@@ -41,7 +49,7 @@ class DestinationActivity :
 
     private fun initFindBtnClickListener() {
         binding.btnDestinationFind.setOnClickListener {
-            if(!binding.etDestinationInput.text.isNullOrEmpty()) {
+            if (!binding.etDestinationInput.text.isNullOrEmpty()) {
                 destinationViewModel.initDestination()
                 val inputMethodManager =
                     this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
