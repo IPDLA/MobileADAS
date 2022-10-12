@@ -6,7 +6,6 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ipdla.mobileadas.util.Event
 import com.skt.Tmap.TMapData
 import kotlinx.coroutines.launch
 
@@ -17,6 +18,13 @@ class DestinationViewModel : ViewModel() {
     private val _latitude = MutableLiveData<Double>()
     val latitude: LiveData<Double> = _latitude
 
+    private val _showErrorToast = MutableLiveData<Event<Boolean>>()
+    val showErrorToast: LiveData<Event<Boolean>> = _showErrorToast
+
+    fun onButtonClick() {
+        _showErrorToast.value = Event(true)
+    }
+
     var destination = MutableLiveData("")
 
     fun initIstTyping(typing: Boolean) {
@@ -24,18 +32,26 @@ class DestinationViewModel : ViewModel() {
     }
 
     fun initDestination() {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                TMapData().findAllPOI(destination.value
-                )
-            }.onSuccess { poiItem ->
-                destination.postValue(poiItem[0].poiName)
-                _longitude.postValue(poiItem[0].frontLon.toDouble())
-                _latitude.postValue(poiItem[0].frontLat.toDouble())
-                initIstTyping(false)
-            }.onFailure {
-
-            }
+        TMapData().findAllPOI(destination.value
+        )
+        { poiItem ->
+            destination.postValue(poiItem[0].poiName)
+            _longitude.postValue(poiItem[0].frontLon.toDouble())
+            _latitude.postValue(poiItem[0].frontLat.toDouble())
+            initIstTyping(false)
         }
+//        viewModelScope.launch {
+//            kotlin.runCatching {
+//                TMapData().findAllPOI(destination.value
+//                )
+//            }.onSuccess { poiItem ->
+//                destination.postValue(poiItem[0].poiName)
+//                _longitude.postValue(poiItem[0].frontLon.toDouble())
+//                _latitude.postValue(poiItem[0].frontLat.toDouble())
+//                initIstTyping(false)
+//            }.onFailure {
+//                onButtonClick()
+//            }
+//        }
     }
 }
