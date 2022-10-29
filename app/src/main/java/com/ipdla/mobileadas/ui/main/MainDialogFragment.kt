@@ -11,9 +11,9 @@ import com.ipdla.mobileadas.R
 import com.ipdla.mobileadas.databinding.FragmentMainDialogBinding
 import com.ipdla.mobileadas.ui.main.viewmodel.MainViewModel
 
-class MainDialogFragment : DialogFragment() {
+class MainDialogFragment(private val doAfterConfirm: () -> Unit) : DialogFragment() {
     private var _binding: FragmentMainDialogBinding? = null
-    val binding get() = _binding ?: error("바인딩 에러")
+    private val binding get() = _binding ?: error("바인딩 에러")
     private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
@@ -48,8 +48,7 @@ class MainDialogFragment : DialogFragment() {
 
     private fun initConfirmTextClickListener() {
         binding.tvMainDialogConfirm.setOnClickListener {
-            mainViewModel.initIsGuide(false)
-            mainViewModel.initDestination(" - ")
+            doAfterConfirm()
             dismiss()
         }
     }

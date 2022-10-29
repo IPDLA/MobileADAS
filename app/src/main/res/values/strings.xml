@@ -3,9 +3,11 @@
 
     <!-- MainActivity -->
     <string name="main_speed_title">현재 속도</string>
-    <string name="main_destination_title">목적지</string>
-    <string name="main_time_title">예상 도착 시간</string>
     <string name="main_speed_unit">km/h</string>
+    <string name="main_destination_title">목적지</string>
+    <string name="main_distance_title">거리</string>
+    <string name="main_distance_unit_km">km</string>
+    <string name="main_distance_unit_m">m</string>
     <string name="main_guide_on">경로 안내 종료</string>
     <string name="main_guide_off">경로 안내</string>
 

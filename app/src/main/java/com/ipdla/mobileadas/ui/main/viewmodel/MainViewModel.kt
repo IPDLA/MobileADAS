@@ -23,6 +23,9 @@ class MainViewModel : ViewModel() {
     private val _destination = MutableLiveData(" - ")
     val destination: LiveData<String> = _destination
 
+    private val _distance = MutableLiveData(0)
+    val distance: LiveData<Int> = _distance
+
     fun initIsCaution(isCaution: Boolean) {
         _isCaution.postValue(isCaution)
     }
@@ -41,5 +44,9 @@ class MainViewModel : ViewModel() {
 
     fun initDestination(destination: String?) {
         _destination.postValue(destination)
+    }
+
+    fun initDistance(distance: Int) {
+        _distance.postValue(distance)
     }
 }
