@@ -18,6 +18,7 @@
     <string name="destination_location_head">목적지가</string>
     <string name="destination_location_tail">맞나요?</string>
     <string name="destination_find">찾기</string>
+    <string name="destination_find_no_result">검색 결과가 없습니다.</string>
 
     <!-- MainDialogFragment -->
     <string name="dialog_confirm">확인</string>
