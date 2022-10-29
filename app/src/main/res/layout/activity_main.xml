@@ -21,9 +21,9 @@
 
         <ImageView
             android:id="@+id/iv_main_img_main"
-            android:layout_width="166dp"
+            android:layout_width="140dp"
             android:layout_height="0dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:src="@{mainViewModel.isGuide ? @drawable/ic_test : @drawable/ic_test}"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -107,7 +107,7 @@
             android:text="@string/main_destination_title"
             android:textColor="@color/light_gray"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_main_guide"
+            app:layout_constraintBottom_toTopOf="@id/tv_main_distance_title"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -120,10 +120,55 @@
             android:includeFontPadding="false"
             android:maxEms="6"
             android:maxLines="1"
-            android:text="@{mainViewModel.destination != null? mainViewModel.destination : ` - `}"
+            android:text="@{mainViewModel.isGuide ? mainViewModel.destination : ` - `}"
             android:textColor="@color/light_gray"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_main_destination_title"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_main_distance_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="40dp"
+            android:fontFamily="@font/noto_sans_kr_medium"
+            android:includeFontPadding="false"
+            android:text="@string/main_distance_title"
+            android:textColor="@color/light_gray"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_main_guide"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_main_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/noto_sans_kr_medium"
+            android:includeFontPadding="false"
+            android:maxEms="6"
+            android:maxLines="1"
+            android:text="@{mainViewModel.isGuide ? (mainViewModel.distance >= 1000? String.valueOf(mainViewModel.distance / 1000) : String.valueOf(mainViewModel.distance)) : ` - `}"
+            android:textColor="@color/light_gray"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_main_distance_title"
+            app:layout_constraintEnd_toStartOf="@id/tv_main_distance_unit" />
+
+        <TextView
+            android:id="@+id/tv_main_distance_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/noto_sans_kr_medium"
+            android:includeFontPadding="false"
+            android:maxEms="6"
+            android:maxLines="1"
+            android:text="@{mainViewModel.distance >= 1000 ? @string/main_distance_unit_km : @string/main_distance_unit_m}"
+            android:textColor="@color/light_gray"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_main_distance_title"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton

@@ -96,6 +96,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     presentTMapPoint =
                         TMapPoint(presentLocation.latitude, presentLocation.longitude)
                     mainViewModel.initSpeed(speed.toInt())
+
                     if (mainViewModel.isGuide.value == true) {
                         tMapView.setCenterPoint(presentTMapPoint.longitude,
                             presentTMapPoint.latitude)
@@ -118,6 +119,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                             tMapPolyLine.outLineColor = getColor(R.color.light_red)
                             tMapPolyLine.lineWidth = 30f
                             tMapPolyLine.outLineWidth = 50f
+                            mainViewModel.initDistance(tMapPolyLine.distance.toInt())
                             tMapView.addTMapPolyLine("Line1", tMapPolyLine)
                             tMapView.setCompassMode(true)
                         }
@@ -187,7 +189,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initGuideBtnClickListener() {
         binding.btnMainGuide.setOnClickListener {
             if (mainViewModel.isGuide.value == true) {
-                MainDialogFragment().show(supportFragmentManager, this.javaClass.name)
+                MainDialogFragment {
+                    mainViewModel.initDistance(0)
+                    mainViewModel.initIsGuide(false)
+                    mainViewModel.initDestination(" - ")
+                    binding.layoutMapView.removeView(tMapView)
+                }.show(supportFragmentManager, this.javaClass.name)
             } else {
                 mainViewModel.initDestination(null)
                 val intent = Intent(this, DestinationActivity::class.java)
