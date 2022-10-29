@@ -10,6 +10,7 @@
     <string name="main_distance_unit_m">m</string>
     <string name="main_guide_on">경로 안내 종료</string>
     <string name="main_guide_off">경로 안내</string>
+    <string name="main_arrival_at_destination">목적지에 도착했습니다.</string>
 
     <!-- DestinationActivity -->
     <string name="destination_set">네</string>

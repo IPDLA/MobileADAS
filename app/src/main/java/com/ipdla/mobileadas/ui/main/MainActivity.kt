@@ -21,6 +21,7 @@ import com.ipdla.mobileadas.databinding.ActivityMainBinding
 import com.ipdla.mobileadas.ui.base.BaseActivity
 import com.ipdla.mobileadas.ui.destination.DestinationActivity
 import com.ipdla.mobileadas.ui.main.viewmodel.MainViewModel
+import com.ipdla.mobileadas.util.showToast
 import com.skt.Tmap.TMapData
 import com.skt.Tmap.TMapPoint
 import com.skt.Tmap.TMapView
@@ -55,6 +56,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initSoundBtnClickListener()
         initCautionAnimator()
         initIsCautionObserver()
+        initDistanceObserver()
     }
 
     private fun initCautionAnimator() {
@@ -79,6 +81,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 animationColorChange.start()
             } else {
                 animationColorChange.end()
+            }
+        }
+    }
+
+    private fun initDistanceObserver() {
+        mainViewModel.distance.observe(this) {
+            if(mainViewModel.isGuide.value == true) {
+                if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
+                    mainViewModel.initIsGuide(false)
+                    showToast(getString(R.string.main_arrival_at_destination))
+                }
             }
         }
     }
