@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -120,7 +121,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                             tMapPolyLine.lineWidth = 40f
                             tMapPolyLine.outLineWidth = 40f
                             mainViewModel.initDistance(tMapPolyLine.distance.toInt())
-                            tMapView.addTMapPolyLine("Line1", tMapPolyLine)
+                            tMapView.removeAllTMapPolyLine()
+                            tMapView.addTMapPolyLine("tMapPolyLine", tMapPolyLine)
                             tMapView.setCompassMode(true)
                         }
                     }
