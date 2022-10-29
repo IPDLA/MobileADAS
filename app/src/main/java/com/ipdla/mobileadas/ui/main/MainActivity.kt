@@ -115,10 +115,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                                     presentTMapPoint,
                                     destinationPoint)
 
-                            tMapPolyLine.lineColor = getColor(R.color.light_red)
-                            tMapPolyLine.outLineColor = getColor(R.color.light_red)
-                            tMapPolyLine.lineWidth = 30f
-                            tMapPolyLine.outLineWidth = 50f
+                            tMapPolyLine.lineColor = getColor(R.color.light_blue)
+                            tMapPolyLine.outLineColor = getColor(R.color.light_blue)
+                            tMapPolyLine.lineWidth = 40f
+                            tMapPolyLine.outLineWidth = 40f
                             mainViewModel.initDistance(tMapPolyLine.distance.toInt())
                             tMapView.addTMapPolyLine("Line1", tMapPolyLine)
                             tMapView.setCompassMode(true)
@@ -206,6 +206,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initSoundBtnClickListener() {
         binding.btnMainSound.setOnClickListener {
             mainViewModel.initIsSoundOn(!mainViewModel.isSoundOn.value!!)
+            mainViewModel.initIsCaution(!mainViewModel.isCaution.value!!)
         }
     }
 
