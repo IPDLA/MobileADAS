@@ -85,6 +85,12 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-video:${camerax_version}"
+    implementation 'androidx.window:window:1.0.0-alpha09'
+
+    // Navigation library
+    def nav_version = "2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     // tflite app ui
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
