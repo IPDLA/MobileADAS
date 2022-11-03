@@ -13,6 +13,8 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,7 +45,7 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.system.exitProcess
 
-class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), ObjectDetectionHelper.DetectorListener {
+class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var animationColorChange: Animator
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
@@ -76,7 +78,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         initCautionAnimator()
         initIsCautionObserver()
 
-        initDectector()
+//        initDectector()
     }
 
     private fun initCautionAnimator() {
@@ -264,147 +266,242 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     }
 
 
-    private fun initDectector() {
-        Log.d("abcd","init Detector")
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CAMERA_PERMISSION
-            )
-        }
-
-        objectDetectorHelper = ObjectDetectionHelper(
-            context = this,
-            objectDetectorListener = this)
-
-        // Initialize our background executor
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        binding.mainPreviewView.post{
-            setUpCamera()
-        }
-    }
-
-
-
-    private fun setUpCamera() {
-        Log.d("abcd","init setUpCamera")
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(applicationContext)
-        cameraProviderFuture.addListener(
-            {
-                // CameraProvider
-                cameraProvider = cameraProviderFuture.get()
-
-                // Build and bind the camera use cases
-                bindCameraUseCases()
-            },
-            ContextCompat.getMainExecutor(this)
-        )
-    }
-
-    @SuppressLint("UnsafeOptInUsageError")
-    private fun bindCameraUseCases() {
-        Log.d("abcd","init bindCameraUse")
-        // CameraProvider
-        val cameraProvider =
-            cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
-
-        // CameraSelector - makes assumption that we're only using the back camera
-        val cameraSelector =
-            CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
-
-        // Preview. Only using the 4:3 ratio because this is the closest to our models
-        preview =
-            Preview.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .setTargetRotation(binding.mainPreviewView.display.rotation)
-                .build()
-        Log.d("abcd","preview Passed")
-        // ImageAnalysis. Using RGBA 8888 to match how our models work
-        imageAnalyzer =
-            ImageAnalysis.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .setTargetRotation(binding.mainPreviewView.display.rotation)
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                .build()
-                // The analyzer can then be assigned to the instance
-                .also {
-                    Log.d("abcd","imageAnalyzer initiated")
-                    it.setAnalyzer(cameraExecutor) { image ->
-                        Log.d("abcd","image analyzer failed")
-                        if (!::bitmapBuffer.isInitialized) {
-                            // The image rotation and RGB image buffer are initialized only once
-                            // the analyzer has started running
-                            Log.d("abcd","imageAnalyzer Entered")
-                            bitmapBuffer = Bitmap.createBitmap(
-                                image.width,
-                                image.height,
-                                Bitmap.Config.ARGB_8888
-                            )
-                        }
-                        Log.d("abcd","after bitmapBuffer")
-
-                        detectObjects(image)
-                    }
-                }
-
-        // Must unbind the use-cases before rebinding them
-        cameraProvider.unbindAll()
-
-        try {
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
-            camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
-
-            // Attach the viewfinder's surface provider to preview use case
-//            preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
-        } catch (exc: Exception) {
-            Log.e("TAG", "Use case binding failed", exc)
-        }
-    }
-
-    private fun detectObjects(image: ImageProxy) {
-        Log.d("abcd","init detectObjects")
-        // Copy out RGB bits to the shared bitmap buffer
-        image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
-
-        val imageRotation = image.imageInfo.rotationDegrees
-        // Pass Bitmap and rotation to the object detector helper for processing and detection
-        objectDetectorHelper.detect(bitmapBuffer, imageRotation)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        imageAnalyzer?.targetRotation = binding.mainPreviewView.display.rotation
-    }
-
-    override fun onError(error: String) {
-//        activity?.runOnUiThread {
+//    private fun initDectector() {
+//        Log.d("abcd","init Detector")
+//
+//        if (ActivityCompat.checkSelfPermission(this,
+//                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.CAMERA),
+//                REQUEST_CAMERA_PERMISSION
+//            )
+//        }
+//
+//        objectDetectorHelper = ObjectDetectionHelper(
+//            context = this,
+//            objectDetectorListener = this)
+//
+//        // Initialize our background executor
+//        cameraExecutor = Executors.newSingleThreadExecutor()
+//        binding.mainPreviewView.post{
+//            setUpCamera()
+//        }
+//    }
+//
+//
+//
+//    private fun setUpCamera() {
+//        Log.d("abcd","init setUpCamera")
+//        val cameraProviderFuture = ProcessCameraProvider.getInstance(applicationContext)
+//        cameraProviderFuture.addListener(
+//            {
+//                // CameraProvider
+//                cameraProvider = cameraProviderFuture.get()
+//
+//                // Build and bind the camera use cases
+//                bindCameraUseCases()
+//            },
+//            ContextCompat.getMainExecutor(this)
+//        )
+//    }
+//
+//    @SuppressLint("UnsafeOptInUsageError")
+//    private fun bindCameraUseCases() {
+//        Log.d("abcd","init bindCameraUse")
+//        // CameraProvider
+//        val cameraProvider =
+//            cameraProvider ?: throw IllegalStateException("Camera initialization failed.")
+//
+//        // CameraSelector - makes assumption that we're only using the back camera
+//        val cameraSelector =
+//            CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+//
+//        // Preview. Only using the 4:3 ratio because this is the closest to our models
+//        preview =
+//            Preview.Builder()
+//                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+//                .setTargetRotation(binding.mainPreviewView.display.rotation)
+//                .build()
+//        Log.d("abcd","preview Passed")
+//        // ImageAnalysis. Using RGBA 8888 to match how our models work
+//        imageAnalyzer =
+//            ImageAnalysis.Builder()
+//                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+//                .setTargetRotation(binding.mainPreviewView.display.rotation)
+//                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+//                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+//                .build()
+//                // The analyzer can then be assigned to the instance
+//                .also {
+//                    Log.d("abcd","imageAnalyzer initiated")
+//                    it.setAnalyzer(cameraExecutor) { image ->
+//                        Log.d("abcd","image analyzer failed")
+//                        if (!::bitmapBuffer.isInitialized) {
+//                            // The image rotation and RGB image buffer are initialized only once
+//                            // the analyzer has started running
+//                            Log.d("abcd","imageAnalyzer Entered")
+//                            bitmapBuffer = Bitmap.createBitmap(
+//                                image.width,
+//                                image.height,
+//                                Bitmap.Config.ARGB_8888
+//                            )
+//                        }
+//                        Log.d("abcd","after bitmapBuffer")
+//
+//                        detectObjects(image)
+//                    }
+//                }
+//
+//        // Must unbind the use-cases before rebinding them
+//        cameraProvider.unbindAll()
+//
+//        try {
+//            // A variable number of use-cases can be passed here -
+//            // camera provides access to CameraControl & CameraInfo
+//            camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
+//
+//            // Attach the viewfinder's surface provider to preview use case
+////            preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
+//        } catch (exc: Exception) {
+//            Log.e("TAG", "Use case binding failed", exc)
+//        }
+//    }
+//
+//    private fun detectObjects(image: ImageProxy) {
+//        Log.d("abcd","init detectObjects")
+//        // Copy out RGB bits to the shared bitmap buffer
+//        image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
+//
+//        val imageRotation = image.imageInfo.rotationDegrees
+//        // Pass Bitmap and rotation to the object detector helper for processing and detection
+//        objectDetectorHelper.detect(bitmapBuffer, imageRotation)
+//    }
+//
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//        imageAnalyzer?.targetRotation = binding.mainPreviewView.display.rotation
+//    }
+//
+//    override fun onError(error: String) {
+//        this?.runOnUiThread {
 //            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
 //        }
-    }
-
-    override fun onResults(
-        results: MutableList<Detection>?,
-        inferenceTime: Long,
-        imageHeight: Int,
-        imageWidth: Int
-    ) {
-        Log.d("abcd", "${results?.get(0)!!.categories[0].label}")
-//        activity?.runOnUiThread {
+//    }
+//
+//    override fun onResults(
+//        results: MutableList<Detection>?,
+//        inferenceTime: Long,
+//        imageHeight: Int,
+//        imageWidth: Int
+//    ) {
+//        Log.d("abcd", "${results?.get(0)!!.categories[0].label}")
+//        this?.runOnUiThread {
 //            // Pass necessary information to OverlayView for drawing on the canvas
-//            fragmentCameraBinding.overlay.setResults(
+//            binding.overlay.setResults(
 //                results ?: LinkedList<Detection>(),
 //                imageHeight,
 //                imageWidth
 //            )
 //
 //            // Force a redraw
-//            fragmentCameraBinding.overlay.invalidate()
+//            binding.overlay.invalidate()
 //        }
-    }
+//    }
+//
+//    private fun initBottomSheetControls() {
+//        // When clicked, lower detection score threshold floor
+//        binding.bottomSheetLayout.thresholdMinus.setOnClickListener {
+//            if (objectDetectorHelper.threshold >= 0.1) {
+//                objectDetectorHelper.threshold -= 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, raise detection score threshold floor
+//        binding.bottomSheetLayout.thresholdPlus.setOnClickListener {
+//            if (objectDetectorHelper.threshold <= 0.8) {
+//                objectDetectorHelper.threshold += 0.1f
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, reduce the number of objects that can be detected at a time
+//        binding.bottomSheetLayout.maxResultsMinus.setOnClickListener {
+//            if (objectDetectorHelper.maxResults > 1) {
+//                objectDetectorHelper.maxResults--
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, increase the number of objects that can be detected at a time
+//        binding.bottomSheetLayout.maxResultsPlus.setOnClickListener {
+//            if (objectDetectorHelper.maxResults < 5) {
+//                objectDetectorHelper.maxResults++
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, decrease the number of threads used for detection
+//        binding.bottomSheetLayout.threadsMinus.setOnClickListener {
+//            if (objectDetectorHelper.numThreads > 1) {
+//                objectDetectorHelper.numThreads--
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, increase the number of threads used for detection
+//        binding.bottomSheetLayout.threadsPlus.setOnClickListener {
+//            if (objectDetectorHelper.numThreads < 4) {
+//                objectDetectorHelper.numThreads++
+//                updateControlsUi()
+//            }
+//        }
+//
+//        // When clicked, change the underlying hardware used for inference. Current options are CPU
+//        // GPU, and NNAPI
+//        binding.bottomSheetLayout.spinnerDelegate.setSelection(0, false)
+//        binding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
+//            object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+//                    objectDetectorHelper.currentDelegate = p2
+//                    updateControlsUi()
+//                }
+//
+//                override fun onNothingSelected(p0: AdapterView<*>?) {
+//                    /* no op */
+//                }
+//            }
+//
+//        // When clicked, change the underlying model used for object detection
+//        binding.bottomSheetLayout.spinnerModel.setSelection(0, false)
+//        binding.bottomSheetLayout.spinnerModel.onItemSelectedListener =
+//            object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+//                    objectDetectorHelper.currentModel = p2
+//                    updateControlsUi()
+//                }
+//
+//                override fun onNothingSelected(p0: AdapterView<*>?) {
+//                    /* no op */
+//                }
+//            }
+//    }
+//
+//    // Update the values displayed in the bottom sheet. Reset detector.
+//    private fun updateControlsUi() {
+//        binding.bottomSheetLayout.maxResultsValue.text =
+//            objectDetectorHelper.maxResults.toString()
+//        binding.bottomSheetLayout.thresholdValue.text =
+//            String.format("%.2f", objectDetectorHelper.threshold)
+//        binding.bottomSheetLayout.threadsValue.text =
+//            objectDetectorHelper.numThreads.toString()
+//
+//        // Needs to be cleared instead of reinitialized because the GPU
+//        // delegate needs to be initialized on the thread using it when applicable
+//        objectDetectorHelper.clearObjectDetector()
+//        binding.overlay.clear()
+//    }
+
 }
