@@ -25,4 +25,5 @@
     <string name="dialog_confirm">확인</string>
     <string name="dialog_cancel">취소</string>
     <string name="dialog_content">경로 안내를 종료하시겠습니까?</string>
+
 </resources>

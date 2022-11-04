@@ -11,6 +11,8 @@ class MainViewModel : ViewModel() {
     private val _isGuide = MutableLiveData(false)
     val isGuide: LiveData<Boolean> = _isGuide
 
+
+
     private val _isSoundOn = MutableLiveData(true)
     val isSoundOn: LiveData<Boolean> = _isSoundOn
 
