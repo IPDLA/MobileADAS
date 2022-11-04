@@ -33,6 +33,8 @@ class CameraFragment : Fragment(), ObjectDetectionHelper.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
+    private var targetList = listOf("person","car","laptop")
+    private var scaleFactor: Float = 1f
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -182,6 +184,25 @@ class CameraFragment : Fragment(), ObjectDetectionHelper.DetectorListener {
         imageWidth: Int
     ) {
         activity?.runOnUiThread {
+            if (results != null) {
+                for (result in results) {
+                    if (targetList.contains(result.categories[0].label)) {
+                        val boundingBox = result.boundingBox
+
+                        val width = boundingBox.width() * scaleFactor
+                        val height = boundingBox.height() * scaleFactor
+
+                        if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        }
+
+                        //input image에 대한 width & height = imageWidth, imageHeight
+                        //위 네개의 value를 통한 boundingbox width, height 알 수 있으면
+                        //width/imageWidth, height/imageHeight 의 비율로
+                    }
+                }
+            }
+
             // Pass necessary information to OverlayView for drawing on the canvas
             fragmentCameraBinding.overlay.setResults(
                 results ?: LinkedList<Detection>(),
