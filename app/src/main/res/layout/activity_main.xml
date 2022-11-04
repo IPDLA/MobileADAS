@@ -37,6 +37,8 @@
             android:layout_marginHorizontal="30dp"
             android:layout_marginTop="35dp"
             android:layout_marginBottom="65dp"
+            android:clickable="false"
+            android:focusable="false"
             android:visibility="@{mainViewModel.isGuide ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toTopOf="@+id/tv_main_speed_title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,6 +46,19 @@
             app:layout_constraintTop_toBottomOf="@+id/iv_main_img_main">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_map_view_cover"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="@{mainViewModel.isGuide ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@+id/layout_map_view"
+            app:layout_constraintEnd_toEndOf="@+id/layout_map_view"
+            app:layout_constraintStart_toStartOf="@+id/layout_map_view"
+            app:layout_constraintTop_toTopOf="@+id/layout_map_view" />
 
         <ImageButton
             android:id="@+id/btn_main_sound"

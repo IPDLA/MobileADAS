@@ -31,6 +31,7 @@ import com.ipdla.mobileadas.tflite.objectDetect.ObjectDetectionHelper
 import com.ipdla.mobileadas.ui.base.BaseActivity
 import com.ipdla.mobileadas.ui.destination.DestinationActivity
 import com.ipdla.mobileadas.ui.main.viewmodel.MainViewModel
+import com.ipdla.mobileadas.util.showToast
 import com.skt.Tmap.TMapData
 import com.skt.Tmap.TMapPoint
 import com.skt.Tmap.TMapView
@@ -77,8 +78,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initSoundBtnClickListener()
         initCautionAnimator()
         initIsCautionObserver()
-
-//        initDectector()
+        initDistanceObserver()
     }
 
     private fun initCautionAnimator() {
@@ -103,6 +103,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 animationColorChange.start()
             } else {
                 animationColorChange.end()
+            }
+        }
+    }
+
+    private fun initDistanceObserver() {
+        mainViewModel.distance.observe(this) {
+            if(mainViewModel.isGuide.value == true) {
+                if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
+                    mainViewModel.initIsGuide(false)
+                    showToast(getString(R.string.main_arrival_at_destination))
+                }
             }
         }
     }
@@ -140,12 +151,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                                     presentTMapPoint,
                                     destinationPoint)
 
-                            tMapPolyLine.lineColor = getColor(R.color.light_red)
-                            tMapPolyLine.outLineColor = getColor(R.color.light_red)
-                            tMapPolyLine.lineWidth = 30f
-                            tMapPolyLine.outLineWidth = 50f
+                            tMapPolyLine.lineColor = getColor(R.color.light_blue)
+                            tMapPolyLine.outLineColor = getColor(R.color.light_blue)
+                            tMapPolyLine.lineWidth = 40f
+                            tMapPolyLine.outLineWidth = 40f
                             mainViewModel.initDistance(tMapPolyLine.distance.toInt())
-                            tMapView.addTMapPolyLine("Line1", tMapPolyLine)
+                            tMapView.removeAllTMapPolyLine()
+                            tMapView.addTMapPolyLine("tMapPolyLine", tMapPolyLine)
                             tMapView.setCompassMode(true)
                         }
                     }
@@ -231,6 +243,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initSoundBtnClickListener() {
         binding.btnMainSound.setOnClickListener {
             mainViewModel.initIsSoundOn(!mainViewModel.isSoundOn.value!!)
+            mainViewModel.initIsCaution(!mainViewModel.isCaution.value!!)
         }
     }
 

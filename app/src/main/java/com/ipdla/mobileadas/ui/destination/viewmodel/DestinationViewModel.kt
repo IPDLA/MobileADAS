@@ -16,11 +16,11 @@ class DestinationViewModel : ViewModel() {
     private val _latitude = MutableLiveData<Double>()
     val latitude: LiveData<Double> = _latitude
 
-    private val _showErrorToast = MutableLiveData<Event<Boolean>>()
-    val showErrorToast: LiveData<Event<Boolean>> = _showErrorToast
+    private val _isFindError = MutableLiveData<Event<Boolean>>()
+    val isFindError: LiveData<Event<Boolean>> = _isFindError
 
-    fun onButtonClick() {
-        _showErrorToast.value = Event(true)
+    private fun showErrorToast() {
+        _isFindError.postValue(Event(true))
     }
 
     var destination = MutableLiveData("")
@@ -30,13 +30,15 @@ class DestinationViewModel : ViewModel() {
     }
 
     fun initDestination() {
-        TMapData().findAllPOI(destination.value
-        )
-        { poiItem ->
-            destination.postValue(poiItem[0].poiName)
-            _longitude.postValue(poiItem[0].frontLon.toDouble())
-            _latitude.postValue(poiItem[0].frontLat.toDouble())
-            initIstTyping(false)
+        TMapData().findAllPOI(destination.value) { poiItem ->
+            if (poiItem != null) {
+                destination.postValue(poiItem[0].poiName)
+                _longitude.postValue(poiItem[0].frontLon.toDouble())
+                _latitude.postValue(poiItem[0].frontLat.toDouble())
+                initIstTyping(false)
+            } else {
+                showErrorToast()
+            }
         }
     }
 }

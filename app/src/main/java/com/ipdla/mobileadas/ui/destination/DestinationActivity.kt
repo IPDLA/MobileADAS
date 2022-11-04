@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.ipdla.mobileadas.BuildConfig.TMAP_API_KEY
 import com.ipdla.mobileadas.R
@@ -19,32 +18,35 @@ import com.skt.Tmap.TMapTapi
 class DestinationActivity :
     BaseActivity<ActivityDestinationBinding>(R.layout.activity_destination) {
     private val destinationViewModel by viewModels<DestinationViewModel>()
+    lateinit var tMapTapi: TMapTapi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.destinationViewModel = destinationViewModel
 
-        destinationViewModel.showErrorToast.observe(this) {
-            it.getContentIfNotHandled()?.let {
-                showToast("검색 결과가 없습니다.")
-            }
-        }
-
         setTMapTapi()
         setLayout()
+        initIsFindErrorObserver()
         initFindBtnClickListener()
         initSetBtnClickListener()
         initResetBtnClickListener()
     }
 
     private fun setTMapTapi() {
-        val tMapTapi = TMapTapi(this)
+        tMapTapi = TMapTapi(this)
         tMapTapi.setSKTMapAuthentication(TMAP_API_KEY)
-
     }
 
     private fun setLayout() {
         binding.tvDestinationLocation.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+    }
+
+    private fun initIsFindErrorObserver() {
+        destinationViewModel.isFindError.observe(this) {
+            it.getContentIfNotHandled()?.let {
+                showToast(getString(R.string.destination_find_no_result))
+            }
+        }
     }
 
     private fun initFindBtnClickListener() {
