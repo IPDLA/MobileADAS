@@ -7,9 +7,9 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.properties.Delegates
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -43,6 +44,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var previousLocation: Location
     private lateinit var presentTMapPoint: TMapPoint
     private lateinit var destinationPoint: TMapPoint
+    private val soundPool = SoundPool.Builder().build()
+    private var soundId by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +60,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initCautionAnimator()
         initIsCautionObserver()
         initDistanceObserver()
+        initSoundEffect()
+        initCautionLevelObserver()
+    }
+
+    private fun initSoundEffect() {
+        soundId = soundPool.load(this, R.raw.sound_beep, 1)
     }
 
     private fun initCautionAnimator() {
@@ -85,9 +94,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         }
     }
 
+    private fun initCautionLevelObserver() {
+        mainViewModel.cautionLevel.observe(this) {
+            if (mainViewModel.isSoundOn.value == true) {
+                val level = mainViewModel.cautionLevel.value
+                if (level == 1 || level == 2 || level == 3)
+                    soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
+            }
+        }
+    }
+
     private fun initDistanceObserver() {
         mainViewModel.distance.observe(this) {
-            if(mainViewModel.isGuide.value == true) {
+            if (mainViewModel.isGuide.value == true) {
                 if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
                     mainViewModel.initIsGuide(false)
                     showToast(getString(R.string.main_arrival_at_destination))
@@ -220,6 +239,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initSoundBtnClickListener() {
         binding.btnMainSound.setOnClickListener {
             mainViewModel.initIsSoundOn(!mainViewModel.isSoundOn.value!!)
+            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
         }
     }
 
