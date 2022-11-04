@@ -8,10 +8,11 @@ class MainViewModel : ViewModel() {
     private val _isCaution = MutableLiveData(false)
     val isCaution: LiveData<Boolean> = _isCaution
 
+    private val _cautionLevel = MutableLiveData(0)
+    val cautionLevel: LiveData<Int> = _cautionLevel
+
     private val _isGuide = MutableLiveData(false)
     val isGuide: LiveData<Boolean> = _isGuide
-
-
 
     private val _isSoundOn = MutableLiveData(true)
     val isSoundOn: LiveData<Boolean> = _isSoundOn
@@ -34,6 +35,10 @@ class MainViewModel : ViewModel() {
 
     fun initIsGuide(isGuide: Boolean) {
         _isGuide.postValue(isGuide)
+    }
+
+    fun initCautionLevel(cautionLevel: Int) {
+        _cautionLevel.postValue(cautionLevel)
     }
 
     fun initIsSoundOn(isSoundOn: Boolean) {

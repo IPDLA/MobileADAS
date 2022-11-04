@@ -14,15 +14,19 @@ import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import com.ipdla.mobileadas.R
 import com.ipdla.mobileadas.databinding.FragmentCameraBinding
+import com.ipdla.mobileadas.ui.base.BaseFragment
+import com.ipdla.mobileadas.ui.main.viewmodel.MainViewModel
 import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class CameraFragment : Fragment(), ObjectDetectionHelper.DetectorListener {
+class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_camera), ObjectDetectionHelper.DetectorListener {
+    private val mainViewModel by activityViewModels<MainViewModel>()
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
     private val fragmentCameraBinding
         get() = _fragmentCameraBinding!!
