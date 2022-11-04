@@ -164,54 +164,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
             var flag = true
             if (results != null) {
                 if (results.isNotEmpty()){
-                    for (result in results) {
-                        if (targetList.contains(result.categories[0].label)) {
-                            val boundingBox = result.boundingBox
-                            var width = 0f
-                            var height = 0f
-                            if (result.categories[0].label.equals("person")) {
-                                width = boundingBox.width() * scaleFactor
-                                height = boundingBox.height() * scaleFactor
-
-                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                                    mainViewModel.initCautionLevel(1)
-                                }
-                            }else if (result.categories[0].label.equals("bicycle")) {
-                                width = boundingBox.width() * scaleFactor
-                                height = boundingBox.height() * scaleFactor
-
-                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                                    mainViewModel.initCautionLevel(1)
-                                }
-
-                            }else if (result.categories[0].label.equals("car")) {
-                                width = boundingBox.width() * scaleFactor
-                                height = boundingBox.height() * scaleFactor
-
-                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                                    mainViewModel.initCautionLevel(1)
-                                }
-                            } else {
-                                mainViewModel.initCautionLevel(0)
-                            }
-                        }
-                    }
+                    flag = detectObjectByLabel(results,imageHeight,imageWidth)
                 } else{
                     if (trafficResults != null) {
-                        flag = false
-                        for (result in trafficResults) {
-                            val boundingBox = result.boundingBox
-
-                            val width = boundingBox.width() * scaleFactor
-                            val height = boundingBox.height() * scaleFactor
-
-                            if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
-                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                            }
-                        }
+                        flag = detectTrafficSigns(trafficResults, imageHeight, imageWidth)
                     }
                 }
             }
@@ -239,5 +195,67 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun detectObjectByLabel(results: MutableList<Detection>,
+                                    imageHeight: Int,
+                                    imageWidth: Int) : Boolean{
+        for (result in results) {
+            if (targetList.contains(result.categories[0].label)) {
+                val boundingBox = result.boundingBox
+                var width = 0f
+                var height = 0f
+                var label = result.categories[0].label
+
+                when (label) {
+                    "person" ->{
+                        width = boundingBox.width() * scaleFactor
+                        height = boundingBox.height() * scaleFactor
+
+                        if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(1)
+                        }
+                    }
+                    "bicycle" ->{
+                        width = boundingBox.width() * scaleFactor
+                        height = boundingBox.height() * scaleFactor
+
+                        if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(1)
+                        }
+                    }
+                    "car" ->{
+                        width = boundingBox.width() * scaleFactor
+                        height = boundingBox.height() * scaleFactor
+
+                        if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(1)
+                        }
+                    }
+                    else -> mainViewModel.initCautionLevel(0)
+                }
+            }
+        }
+        return true
+    }
+
+    private fun detectTrafficSigns(trafficResults: MutableList<Detection>,
+                                   imageHeight: Int,
+                                   imageWidth: Int) : Boolean{
+        for (result in trafficResults) {
+            val boundingBox = result.boundingBox
+
+            val width = boundingBox.width() * scaleFactor
+            val height = boundingBox.height() * scaleFactor
+
+            if (width / imageWidth > 0.7f && height / imageHeight > 0.5f) {
+                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return false
     }
 }
