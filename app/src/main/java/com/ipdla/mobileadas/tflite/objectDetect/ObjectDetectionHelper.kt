@@ -12,11 +12,6 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import org.tensorflow.lite.task.vision.detector.ObjectDetector
 
 class ObjectDetectionHelper(
-    var threshold: Float = 0.5f,
-    var numThreads: Int = 2,
-    var maxResults: Int = 3,
-    var currentDelegate: Int = 0,
-    var currentModel: Int = 0,
     val context: Context,
     val objectDetectorListener: DetectorListener?
 ) {
@@ -53,19 +48,13 @@ class ObjectDetectionHelper(
             setObjectDetector()
         }
 
-        // Inference time is the difference between the system time at the start and finish of the
-        // process
         var inferenceTime = SystemClock.uptimeMillis()
 
-        // Create preprocessor for the image.
-        // See https://www.tensorflow.org/lite/inference_with_metadata/
-        //            lite_support#imageprocessor_architecture
         val imageProcessor =
             ImageProcessor.Builder()
                 .add(Rot90Op(-imageRotation / 90))
                 .build()
 
-        // Preprocess the image and convert it into a TensorImage for detection.
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
 
         val results = objectDetector?.detect(tensorImage)
