@@ -96,7 +96,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     private fun initCautionLevelObserver() {
         mainViewModel.cautionLevel.observe(this) {
-//            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
+            if (mainViewModel.isSoundOn.value == true) {
+                val level = mainViewModel.cautionLevel.value
+                if (level == 1 || level == 2 || level == 3)
+                    soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
+            }
         }
     }
 
