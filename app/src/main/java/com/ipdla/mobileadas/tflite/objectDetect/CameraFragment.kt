@@ -180,35 +180,66 @@ class CameraFragment : Fragment(), ObjectDetectionHelper.DetectorListener {
     override fun onResults(
         results: MutableList<Detection>?,
         inferenceTime: Long,
+        trafficResults: MutableList<Detection>?,
+        trafficInferenceTime: Long,
         imageHeight: Int,
         imageWidth: Int
     ) {
         activity?.runOnUiThread {
+            var flag = true
             if (results != null) {
-                for (result in results) {
-                    if (targetList.contains(result.categories[0].label)) {
-                        val boundingBox = result.boundingBox
+                if (results.isNotEmpty()){
+                    for (result in results) {
+                        if (targetList.contains(result.categories[0].label)) {
+                            val boundingBox = result.boundingBox
 
-                        val width = boundingBox.width() * scaleFactor
-                        val height = boundingBox.height() * scaleFactor
+                            val width = boundingBox.width() * scaleFactor
+                            val height = boundingBox.height() * scaleFactor
 
-                        if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
+                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            }
+
+                            //input image에 대한 width & height = imageWidth, imageHeight
+                            //위 네개의 value를 통한 boundingbox width, height 알 수 있으면
+                            //width/imageWidth, height/imageHeight 의 비율로
                         }
+                    }
+                } else{
+                    if (trafficResults != null) {
+                        flag = false
+                        for (result in trafficResults) {
+                            val boundingBox = result.boundingBox
 
-                        //input image에 대한 width & height = imageWidth, imageHeight
-                        //위 네개의 value를 통한 boundingbox width, height 알 수 있으면
-                        //width/imageWidth, height/imageHeight 의 비율로
+                            val width = boundingBox.width() * scaleFactor
+                            val height = boundingBox.height() * scaleFactor
+
+                            if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
+                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            }
+
+                            //input image에 대한 width & height = imageWidth, imageHeight
+                            //위 네개의 value를 통한 boundingbox width, height 알 수 있으면
+                            //width/imageWidth, height/imageHeight 의 비율로
+                        }
                     }
                 }
             }
 
             // Pass necessary information to OverlayView for drawing on the canvas
-            fragmentCameraBinding.overlay.setResults(
-                results ?: LinkedList<Detection>(),
-                imageHeight,
-                imageWidth
-            )
+            if (flag) {
+                fragmentCameraBinding.overlay.setResults(
+                    results ?: LinkedList<Detection>(),
+                    imageHeight,
+                    imageWidth
+                )
+            } else{
+                fragmentCameraBinding.overlay.setResults(
+                    trafficResults ?: LinkedList<Detection>(),
+                    imageHeight,
+                    imageWidth
+                )
+            }
 
             // Force a redraw
             fragmentCameraBinding.overlay.invalidate()
