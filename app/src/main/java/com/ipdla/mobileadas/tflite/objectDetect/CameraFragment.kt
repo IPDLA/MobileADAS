@@ -203,36 +203,46 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         for (result in results) {
             if (targetList.contains(result.categories[0].label)) {
                 val boundingBox = result.boundingBox
-                var width = 0f
-                var height = 0f
                 var label = result.categories[0].label
+
+                var calculatedWidth = (boundingBox.width() * scaleFactor) / imageWidth
+                var calculatedHeight = (boundingBox.height() * scaleFactor) / imageHeight
 
                 when (label) {
                     "person" ->{
-                        width = boundingBox.width() * scaleFactor
-                        height = boundingBox.height() * scaleFactor
-
-                        if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                        if (calculatedWidth > 0.3f && calculatedHeight > 0.5f) {
                             Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
                             mainViewModel.initCautionLevel(1)
+                        }else if (calculatedWidth > 0.4f && calculatedHeight > 0.6f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(2)
+                        }else if (calculatedWidth > 0.6f && calculatedHeight > 0.8f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(3)
                         }
                     }
                     "bicycle" ->{
-                        width = boundingBox.width() * scaleFactor
-                        height = boundingBox.height() * scaleFactor
-
-                        if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                        if (calculatedWidth > 0.3f && calculatedHeight > 0.5f) {
                             Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
                             mainViewModel.initCautionLevel(1)
+                        }else if (calculatedWidth > 0.4f && calculatedHeight > 0.6f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(2)
+                        }else if (calculatedWidth > 0.6f && calculatedHeight > 0.8f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(3)
                         }
                     }
                     "car" ->{
-                        width = boundingBox.width() * scaleFactor
-                        height = boundingBox.height() * scaleFactor
-
-                        if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
                             Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
                             mainViewModel.initCautionLevel(1)
+                        }else if (calculatedWidth > 0.5f && calculatedHeight > 0.6f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(2)
+                        }else if (calculatedWidth > 0.7f && calculatedHeight > 0.8f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(3)
                         }
                     }
                     else -> mainViewModel.initCautionLevel(0)
