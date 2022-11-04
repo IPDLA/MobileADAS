@@ -171,6 +171,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
                             if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
                                 Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                mainViewModel.initCautionLevel(1)
                             }
                         }else if (result.categories[0].label.equals("bicycle")) {
                             width = boundingBox.width() * scaleFactor
@@ -178,6 +179,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
                             if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
                                 Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                mainViewModel.initCautionLevel(1)
                             }
 
                         }else if (result.categories[0].label.equals("car")) {
@@ -186,7 +188,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
                             if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
                                 Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                mainViewModel.initCautionLevel(1)
                             }
+                        } else {
+                            mainViewModel.initCautionLevel(0)
                         }
                     }
                 }
