@@ -16,6 +16,7 @@ class ObjectDetectionHelper(
     val objectDetectorListener: DetectorListener?
 ) {
     private var objectDetector: ObjectDetector? = null
+    private var trafficDetector: ObjectDetector? = null
 
     fun clearObjectDetector() {
         objectDetector = null
@@ -26,7 +27,6 @@ class ObjectDetectionHelper(
             ObjectDetector.ObjectDetectorOptions.builder()
                 .setScoreThreshold(0.7f)
                 .setMaxResults(3)
-
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(2)
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
 
@@ -42,13 +42,38 @@ class ObjectDetectionHelper(
             Log.e("Test", "TFLite failed to load model with error: " + e.message)
         }
     }
+    fun setTrafficDetector(){
+        val optionsBuilder =
+            ObjectDetector.ObjectDetectorOptions.builder()
+                .setScoreThreshold(0.6f)
+                .setMaxResults(3)
+        val baseOptionsBuilder = BaseOptions.builder().setNumThreads(2)
+        optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
+
+        val modelName = "traffic.tflite"
+
+        try {
+            trafficDetector =
+                ObjectDetector.createFromFileAndOptions(context, modelName, optionsBuilder.build())
+        } catch (e: IllegalStateException) {
+            objectDetectorListener?.onError(
+                "Traffic detector failed to initialize. See error logs for details"
+            )
+            Log.e("Test", "TFLite failed to load traffic model with error: " + e.message)
+        }
+    }
 
     fun detect(image: Bitmap, imageRotation: Int) {
         if (objectDetector == null) {
             setObjectDetector()
         }
+        //추가
+        if (trafficDetector == null) {
+            setTrafficDetector()
+        }
 
         var inferenceTime = SystemClock.uptimeMillis()
+        var trafficInferenceTime = SystemClock.uptimeMillis()
 
         val imageProcessor =
             ImageProcessor.Builder()
@@ -58,10 +83,16 @@ class ObjectDetectionHelper(
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
 
         val results = objectDetector?.detect(tensorImage)
+        val trafficResults = trafficDetector?.detect(tensorImage)
+
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
+        trafficInferenceTime = SystemClock.uptimeMillis() - trafficInferenceTime
+
         objectDetectorListener?.onResults(
             results,
             inferenceTime,
+            trafficResults,
+            trafficInferenceTime,
             tensorImage.height,
             tensorImage.width)
     }
@@ -71,6 +102,8 @@ class ObjectDetectionHelper(
         fun onResults(
             results: MutableList<Detection>?,
             inferenceTime: Long,
+            trafficResults: MutableList<Detection>?,
+            trafficInferenceTime: Long,
             imageHeight: Int,
             imageWidth: Int
         )
