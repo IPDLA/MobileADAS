@@ -163,22 +163,40 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         activity?.runOnUiThread {
             var flag = true
             if (results != null) {
-
                 if (results.isNotEmpty()){
                     for (result in results) {
                         if (targetList.contains(result.categories[0].label)) {
                             val boundingBox = result.boundingBox
+                            var width = 0f
+                            var height = 0f
+                            if (result.categories[0].label.equals("person")) {
+                                width = boundingBox.width() * scaleFactor
+                                height = boundingBox.height() * scaleFactor
 
-                            val width = boundingBox.width() * scaleFactor
-                            val height = boundingBox.height() * scaleFactor
+                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                    mainViewModel.initCautionLevel(1)
+                                }
+                            }else if (result.categories[0].label.equals("bicycle")) {
+                                width = boundingBox.width() * scaleFactor
+                                height = boundingBox.height() * scaleFactor
 
-                            if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
-                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                    mainViewModel.initCautionLevel(1)
+                                }
+
+                            }else if (result.categories[0].label.equals("car")) {
+                                width = boundingBox.width() * scaleFactor
+                                height = boundingBox.height() * scaleFactor
+
+                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                    mainViewModel.initCautionLevel(1)
+                                }
+                            } else {
+                                mainViewModel.initCautionLevel(0)
                             }
-
-                            //input image에 대한 width & height = imageWidth, imageHeight
-                            //위 네개의 value를 통한 boundingbox width, height 알 수 있으면
-                            //width/imageWidth, height/imageHeight 의 비율로
                         }
                     }
                 } else{
@@ -193,43 +211,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                             if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
                                 Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
                             }
-
-                            //input image에 대한 width & height = imageWidth, imageHeight
-                            //위 네개의 value를 통한 boundingbox width, height 알 수 있으면
-                            //width/imageWidth, height/imageHeight 의 비율로
-
-                for (result in results) {
-                    if (targetList.contains(result.categories[0].label)) {
-                        val boundingBox = result.boundingBox
-                        var width = 0f
-                        var height = 0f
-                        if (result.categories[0].label.equals("person")) {
-                            width = boundingBox.width() * scaleFactor
-                            height = boundingBox.height() * scaleFactor
-
-                            if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                                mainViewModel.initCautionLevel(1)
-                            }
-                        }else if (result.categories[0].label.equals("bicycle")) {
-                            width = boundingBox.width() * scaleFactor
-                            height = boundingBox.height() * scaleFactor
-
-                            if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                                mainViewModel.initCautionLevel(1)
-                            }
-
-                        }else if (result.categories[0].label.equals("car")) {
-                            width = boundingBox.width() * scaleFactor
-                            height = boundingBox.height() * scaleFactor
-
-                            if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                                mainViewModel.initCautionLevel(1)
-                            }
-                        } else {
-                            mainViewModel.initCautionLevel(0)
                         }
                     }
                 }
@@ -249,12 +230,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                     imageWidth
                 )
             }
-            
-            fragmentCameraBinding.overlay.setResults(
-                results ?: LinkedList<Detection>(),
-                imageHeight,
-                imageWidth
-            )
 
             fragmentCameraBinding.overlay.invalidate()
         }
@@ -265,5 +240,4 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
         }
     }
-
 }
