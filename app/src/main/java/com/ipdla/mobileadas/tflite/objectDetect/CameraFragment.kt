@@ -32,7 +32,7 @@ class CameraFragment : Fragment(), ObjectDetectionHelper.DetectorListener {
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
-    private var targetList = listOf("person","car","laptop")
+    private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
     private var scaleFactor: Float = 1f
 
     /** Blocking camera operations are performed using this executor */
@@ -159,12 +159,30 @@ class CameraFragment : Fragment(), ObjectDetectionHelper.DetectorListener {
                 for (result in results) {
                     if (targetList.contains(result.categories[0].label)) {
                         val boundingBox = result.boundingBox
+                        var width = 0f
+                        var height = 0f
+                        if (result.categories[0].label.equals("person")) {
+                            width = boundingBox.width() * scaleFactor
+                            height = boundingBox.height() * scaleFactor
 
-                        val width = boundingBox.width() * scaleFactor
-                        val height = boundingBox.height() * scaleFactor
+                            if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            }
+                        }else if (result.categories[0].label.equals("bicycle")) {
+                            width = boundingBox.width() * scaleFactor
+                            height = boundingBox.height() * scaleFactor
 
-                        if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            }
+
+                        }else if (result.categories[0].label.equals("car")) {
+                            width = boundingBox.width() * scaleFactor
+                            height = boundingBox.height() * scaleFactor
+
+                            if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
+                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
