@@ -38,7 +38,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     private var cameraProvider: ProcessCameraProvider? = null
     private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
     private var scaleFactor: Float = 1f
-    private var toast: Toast = Toast.makeText(context,"",Toast.LENGTH_SHORT)
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -127,6 +126,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                                 Bitmap.Config.ARGB_8888
                             )
                         }
+
                         detectObjects(image)
                     }
                 }
@@ -164,58 +164,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
             var flag = true
             if (results != null) {
                 if (results.isNotEmpty()){
-                    for (result in results) {
-                        if (targetList.contains(result.categories[0].label)) {
-                            val boundingBox = result.boundingBox
-                            var width = 0f
-                            var height = 0f
-                            if (result.categories[0].label.equals("person")) {
-                                width = boundingBox.width() * scaleFactor
-                                height = boundingBox.height() * scaleFactor
-
-                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    toast.cancel()
-                                    toast.setText(result.categories[0].label)
-                                    toast.show()
-                                    mainViewModel.initCautionLevel(1)
-                                }
-                            }else if (result.categories[0].label.equals("bicycle")) {
-                                width = boundingBox.width() * scaleFactor
-                                height = boundingBox.height() * scaleFactor
-
-                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    toast.cancel()
-                                    toast.setText(result.categories[0].label)
-                                    toast.show()
-                                    mainViewModel.initCautionLevel(1)
-                                }
-
-                            }else if (result.categories[0].label.equals("car")) {
-                                width = boundingBox.width() * scaleFactor
-                                height = boundingBox.height() * scaleFactor
-
-                                if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    toast.cancel()
-                                    toast.setText(result.categories[0].label)
-                                    toast.show()
-                                    mainViewModel.initCautionLevel(1)
-                                }
-                            } else {
-                                mainViewModel.initCautionLevel(0)
-                            }
-                        }
-                    }
+                    flag = detectObjectByLabel(results,imageHeight,imageWidth)
                 } else{
                     if (trafficResults != null) {
-                        flag = false
-                        for (result in trafficResults) {
-                            //val boundingBox = result.boundingBox
-                            //val width = boundingBox.width() * scaleFactor
-                            //val height = boundingBox.height() * scaleFactor
-                            toast.cancel()
-                            toast.setText(result.categories[0].label)
-                            toast.show()
-                        }
+                        flag = detectTrafficSigns(trafficResults, imageHeight, imageWidth)
                     }
                 }
             }
@@ -243,5 +195,77 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         activity?.runOnUiThread {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun detectObjectByLabel(results: MutableList<Detection>,
+                                    imageHeight: Int,
+                                    imageWidth: Int) : Boolean{
+        for (result in results) {
+            if (targetList.contains(result.categories[0].label)) {
+                val boundingBox = result.boundingBox
+                var label = result.categories[0].label
+
+                var calculatedWidth = (boundingBox.width() * scaleFactor) / imageWidth
+                var calculatedHeight = (boundingBox.height() * scaleFactor) / imageHeight
+
+                when (label) {
+                    "person" ->{
+                        if (calculatedWidth > 0.6f && calculatedHeight > 0.8f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(3)
+                        }else if (calculatedWidth > 0.4f && calculatedHeight > 0.6f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(2)
+                        }else if (calculatedWidth > 0.3f && calculatedHeight > 0.5f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(1)
+                        }
+                    }
+                    "bicycle" ->{
+                        if (calculatedWidth > 0.6f && calculatedHeight > 0.8f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(3)
+                        }else if (calculatedWidth > 0.4f && calculatedHeight > 0.6f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(2)
+                        }else if (calculatedWidth > 0.3f && calculatedHeight > 0.5f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(1)
+                        }
+                    }
+                    "car" ->{
+                        if (calculatedWidth > 0.7f && calculatedHeight > 0.8f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(3)
+                        }else if (calculatedWidth > 0.5f && calculatedHeight > 0.6f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(2)
+                        }else if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
+                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            mainViewModel.initCautionLevel(1)
+                        }
+                    }
+                    else -> mainViewModel.initCautionLevel(0)
+                }
+            }
+        }
+        return true
+    }
+
+    private fun detectTrafficSigns(trafficResults: MutableList<Detection>,
+                                   imageHeight: Int,
+                                   imageWidth: Int) : Boolean{
+        for (result in trafficResults) {
+            val boundingBox = result.boundingBox
+
+            val width = boundingBox.width() * scaleFactor
+            val height = boundingBox.height() * scaleFactor
+
+            if (width / imageWidth > 0.7f && height / imageHeight > 0.5f) {
+                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return false
     }
 }

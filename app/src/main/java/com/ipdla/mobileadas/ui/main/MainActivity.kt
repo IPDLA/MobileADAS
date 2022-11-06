@@ -7,7 +7,7 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.media.SoundPool
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Looper
 import androidx.activity.result.ActivityResultLauncher
@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
-import kotlin.properties.Delegates
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -44,8 +43,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var previousLocation: Location
     private lateinit var presentTMapPoint: TMapPoint
     private lateinit var destinationPoint: TMapPoint
-    private val soundPool = SoundPool.Builder().build()
-    private var soundId by Delegates.notNull<Int>()
+    private lateinit var mediaPlayer: MediaPlayer
+    private var prevCautionLevel = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,61 +57,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initGuideBtnClickListener()
         initSoundBtnClickListener()
         initCautionAnimator()
-        initIsCautionObserver()
-        initDistanceObserver()
         initSoundEffect()
+        initIsCautionObserver()
         initCautionLevelObserver()
-    }
-
-    private fun initSoundEffect() {
-        soundId = soundPool.load(this, R.raw.sound_beep, 1)
-    }
-
-    private fun initCautionAnimator() {
-        animationColorChange =
-            AnimatorInflater.loadAnimator(this, R.animator.animator_caution).apply {
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        super.onAnimationStart(animation)
-                    }
-
-                    override fun onAnimationEnd(animation: Animator?) {
-                        super.onAnimationEnd(animation)
-                    }
-                })
-                setTarget(binding.layoutMain)
-            }
-    }
-
-    private fun initIsCautionObserver() {
-        mainViewModel.isCaution.observe(this) {
-            if (mainViewModel.isCaution.value == true) {
-                animationColorChange.start()
-            } else {
-                animationColorChange.end()
-            }
-        }
-    }
-
-    private fun initCautionLevelObserver() {
-        mainViewModel.cautionLevel.observe(this) {
-            if (mainViewModel.isSoundOn.value == true) {
-                val level = mainViewModel.cautionLevel.value
-                if (level == 1 || level == 2 || level == 3)
-                    soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
-            }
-        }
-    }
-
-    private fun initDistanceObserver() {
-        mainViewModel.distance.observe(this) {
-            if (mainViewModel.isGuide.value == true) {
-                if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
-                    mainViewModel.initIsGuide(false)
-                    showToast(getString(R.string.main_arrival_at_destination))
-                }
-            }
-        }
+        initIsSoundOnObserver()
+        initDistanceObserver()
     }
 
     private fun initLocationCallback() {
@@ -239,7 +188,76 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initSoundBtnClickListener() {
         binding.btnMainSound.setOnClickListener {
             mainViewModel.initIsSoundOn(!mainViewModel.isSoundOn.value!!)
-            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
+        }
+    }
+
+    private fun initCautionAnimator() {
+        animationColorChange =
+            AnimatorInflater.loadAnimator(this, R.animator.animator_caution).apply {
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator?) {
+                        super.onAnimationStart(animation)
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        super.onAnimationEnd(animation)
+                    }
+                })
+                setTarget(binding.layoutMain)
+            }
+    }
+
+    private fun initSoundEffect(level: Int = 1) {
+        when (level) {
+            1 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_1)
+            2 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_2)
+            3 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_3)
+        }
+    }
+
+    private fun initIsCautionObserver() {
+        mainViewModel.isCaution.observe(this) {
+            if (mainViewModel.isCaution.value == true) {
+                animationColorChange.start()
+            } else {
+                animationColorChange.end()
+            }
+        }
+    }
+
+    private fun initCautionLevelObserver() {
+        mainViewModel.cautionLevel.observe(this) {
+            val level = mainViewModel.cautionLevel.value
+            if (mainViewModel.isSoundOn.value == true && (level == 1 || level == 2 || level == 3)) {
+                if (mainViewModel.cautionLevel.value != prevCautionLevel) {
+//                    mediaPlayer.stop()
+                    initSoundEffect(level)
+                    prevCautionLevel = level
+                }
+                mediaPlayer.start()
+            }
+        }
+    }
+
+    private fun initIsSoundOnObserver() {
+        mainViewModel.isSoundOn.observe(this) {
+            if (mainViewModel.isSoundOn.value == false) {
+                mediaPlayer.stop()
+                mediaPlayer.release()
+            } else {
+                initSoundEffect(0)
+            }
+        }
+    }
+
+    private fun initDistanceObserver() {
+        mainViewModel.distance.observe(this) {
+            if (mainViewModel.isGuide.value == true) {
+                if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
+                    mainViewModel.initIsGuide(false)
+                    showToast(getString(R.string.main_arrival_at_destination))
+                }
+            }
         }
     }
 
