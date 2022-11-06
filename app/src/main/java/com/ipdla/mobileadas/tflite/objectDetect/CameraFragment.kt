@@ -38,6 +38,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     private var cameraProvider: ProcessCameraProvider? = null
     private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
     private var scaleFactor: Float = 1f
+    private var toast: Toast = Toast.makeText(context,"",Toast.LENGTH_SHORT)
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -126,7 +127,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                                 Bitmap.Config.ARGB_8888
                             )
                         }
-
                         detectObjects(image)
                     }
                 }
@@ -174,7 +174,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                                 height = boundingBox.height() * scaleFactor
 
                                 if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                    toast.cancel()
+                                    toast.setText(result.categories[0].label)
+                                    toast.show()
                                     mainViewModel.initCautionLevel(1)
                                 }
                             }else if (result.categories[0].label.equals("bicycle")) {
@@ -182,7 +184,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                                 height = boundingBox.height() * scaleFactor
 
                                 if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                    toast.cancel()
+                                    toast.setText(result.categories[0].label)
+                                    toast.show()
                                     mainViewModel.initCautionLevel(1)
                                 }
 
@@ -191,7 +195,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                                 height = boundingBox.height() * scaleFactor
 
                                 if (width / imageWidth > 0.5f && height / imageHeight > 0.3f) {
-                                    Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                                    toast.cancel()
+                                    toast.setText(result.categories[0].label)
+                                    toast.show()
                                     mainViewModel.initCautionLevel(1)
                                 }
                             } else {
@@ -203,14 +209,12 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                     if (trafficResults != null) {
                         flag = false
                         for (result in trafficResults) {
-                            val boundingBox = result.boundingBox
-
-                            val width = boundingBox.width() * scaleFactor
-                            val height = boundingBox.height() * scaleFactor
-
-                            if (width / imageWidth > 0.7f && height / imageWidth > 0.5f) {
-                                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
-                            }
+                            //val boundingBox = result.boundingBox
+                            //val width = boundingBox.width() * scaleFactor
+                            //val height = boundingBox.height() * scaleFactor
+                            toast.cancel()
+                            toast.setText(result.categories[0].label)
+                            toast.show()
                         }
                     }
                 }
