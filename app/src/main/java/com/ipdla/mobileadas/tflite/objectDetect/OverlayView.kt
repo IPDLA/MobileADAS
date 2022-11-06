@@ -21,6 +21,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var boxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
+    private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
 
     private var scaleFactor: Float = 1f
 
@@ -56,33 +57,35 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         super.draw(canvas)
 
         for (result in results) {
-            val boundingBox = result.boundingBox
+            if (targetList.contains(result.categories[0].label)) {
+                val boundingBox = result.boundingBox
 
-            val top = boundingBox.top * scaleFactor
-            val bottom = boundingBox.bottom * scaleFactor
-            val left = boundingBox.left * scaleFactor
-            val right = boundingBox.right * scaleFactor
+                val top = boundingBox.top * scaleFactor
+                val bottom = boundingBox.bottom * scaleFactor
+                val left = boundingBox.left * scaleFactor
+                val right = boundingBox.right * scaleFactor
 
-            val drawableRect = RectF(left, top, right, bottom)
-            canvas.drawRect(drawableRect, boxPaint)
+                val drawableRect = RectF(left, top, right, bottom)
+                canvas.drawRect(drawableRect, boxPaint)
 
-            val drawableText =
-                result.categories[0].label + " " +
-                        String.format("%.2f", result.categories[0].score)
+                val drawableText =
+                    result.categories[0].label + " " +
+                            String.format("%.2f", result.categories[0].score)
 
-            textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
-            val textWidth = bounds.width()
-            val textHeight = bounds.height()
-            canvas.drawRect(
-                left,
-                top,
-                left + textWidth + Companion.BOUNDING_RECT_TEXT_PADDING,
-                top + textHeight + Companion.BOUNDING_RECT_TEXT_PADDING,
-                textBackgroundPaint
-            )
+                textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
+                val textWidth = bounds.width()
+                val textHeight = bounds.height()
+                canvas.drawRect(
+                    left,
+                    top,
+                    left + textWidth + Companion.BOUNDING_RECT_TEXT_PADDING,
+                    top + textHeight + Companion.BOUNDING_RECT_TEXT_PADDING,
+                    textBackgroundPaint
+                )
 
-            // Draw text for detected object
-            canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
+                // Draw text for detected object
+                canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
+            }
         }
     }
 
