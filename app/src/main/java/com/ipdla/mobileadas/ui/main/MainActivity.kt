@@ -208,12 +208,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initSoundEffect(level: Int = 1) {
-        // sound 파일 3가지 추가
-        // create를 하면 음악 파일이 처음부터 다시 재생됨
         when (level) {
-            1 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep)
-            2 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep)
-            3 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep)
+            1 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_1)
+            2 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_2)
+            3 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_3)
         }
     }
 
@@ -232,6 +230,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             val level = mainViewModel.cautionLevel.value
             if (mainViewModel.isSoundOn.value == true && (level == 1 || level == 2 || level == 3)) {
                 if (mainViewModel.cautionLevel.value != prevCautionLevel) {
+//                    mediaPlayer.stop()
                     initSoundEffect(level)
                     prevCautionLevel = level
                 }
@@ -245,7 +244,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             if (mainViewModel.isSoundOn.value == false) {
                 mediaPlayer.stop()
                 mediaPlayer.release()
-
             } else {
                 initSoundEffect(0)
             }
