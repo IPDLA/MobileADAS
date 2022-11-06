@@ -47,6 +47,9 @@ class MainViewModel : ViewModel() {
 
     fun initSpeed(speed: Int) {
         _speed.postValue(speed)
+        if(speed >= 30) {
+            _speed.postValue(30)
+        }
     }
 
     fun initDestination(destination: String?) {
