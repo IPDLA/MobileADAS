@@ -230,7 +230,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             val level = mainViewModel.cautionLevel.value
             if (mainViewModel.isSoundOn.value == true && (level == 1 || level == 2 || level == 3)) {
                 if (mainViewModel.cautionLevel.value != prevCautionLevel) {
-//                    mediaPlayer.stop()
                     initSoundEffect(level)
                     prevCautionLevel = level
                 }
@@ -242,11 +241,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initIsSoundOnObserver() {
         mainViewModel.isSoundOn.observe(this) {
             if (mainViewModel.isSoundOn.value == false) {
-                mediaPlayer.stop()
-                mediaPlayer.release()
-            } else {
-                initSoundEffect(0)
+                if (mediaPlayer.isPlaying) mediaPlayer.stop()
             }
+            initSoundEffect(0)
         }
     }
 
