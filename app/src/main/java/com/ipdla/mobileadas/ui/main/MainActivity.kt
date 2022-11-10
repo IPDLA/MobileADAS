@@ -38,7 +38,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private lateinit var tMapView: TMapView
-    private lateinit var presentTMapPoint: TMapPoint
+    private lateinit var lastTMapPoint: TMapPoint
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
     private var prevCautionLevel = 0
@@ -64,37 +64,38 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private fun initLocationCallback() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                val presentLocation = locationResult.lastLocation
-                if (presentLocation != null) {
-                    var speed = locationResult.lastLocation?.speed!!.toDouble()
+                val lastLocation = locationResult.lastLocation
+                if (lastLocation != null) {
+                    var speed = lastLocation.speed.toDouble()
                     speed *= METER_PER_SEC_TO_KILOMETER_PER_HOUR * SPEED_CORRECTION_VALUE
                     mainViewModel.initSpeed(speed.toInt())
                     if (mainViewModel.isGuide.value == true) UpdateTMapView()
+                    lastTMapPoint = TMapPoint(lastTMapPoint.latitude, lastTMapPoint.longitude)
                 }
             }
         }
     }
 
     private fun UpdateTMapView() {
-        tMapView.setCenterPoint(presentTMapPoint.longitude,
-            presentTMapPoint.latitude)
-        tMapView.setLocationPoint(presentTMapPoint.longitude,
-            presentTMapPoint.latitude)
+        tMapView.setCenterPoint(lastTMapPoint.longitude,
+            lastTMapPoint.latitude)
+        tMapView.setLocationPoint(lastTMapPoint.longitude,
+            lastTMapPoint.latitude)
 
         CoroutineScope(Dispatchers.IO).launch {
-            delay(3600)
+            delay(FIND_PATH_DELAY)
             // 보행자 경로 안내
             val tMapPolyLine =
                 TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
-                    presentTMapPoint,
+                    lastTMapPoint,
                     destinationPoint)
 
             // 자동차 경로 안내
 //                            val tMapPolyLine =
 //                                TMapData().findPathData(presentTMapPoint, destinationPoint)
 
-            tMapPolyLine.lineColor = getColor(R.color.light_red)
-            tMapPolyLine.outLineColor = getColor(R.color.light_red)
+            tMapPolyLine.lineColor = getColor(R.color.light_blue)
+            tMapPolyLine.outLineColor = getColor(R.color.light_blue)
             tMapPolyLine.lineWidth = 30f
             tMapPolyLine.outLineWidth = 50f
             mainViewModel.initDistance(tMapPolyLine.distance.toInt())
@@ -278,5 +279,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         const val METER_PER_SEC_TO_KILOMETER_PER_HOUR = 3600 / 1000
         const val SPEED_CORRECTION_VALUE = 1.35
         const val LOCATION_REQUEST_INTERVAL = 100L
+        const val FIND_PATH_DELAY = 3600L
     }
 }
