@@ -82,7 +82,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             presentTMapPoint.latitude)
 
         CoroutineScope(Dispatchers.IO).launch {
-            delay(3600)
+            delay(FIND_PATH_DELAY)
             // 보행자 경로 안내
             val tMapPolyLine =
                 TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
@@ -278,5 +278,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         const val METER_PER_SEC_TO_KILOMETER_PER_HOUR = 3600 / 1000
         const val SPEED_CORRECTION_VALUE = 1.35
         const val LOCATION_REQUEST_INTERVAL = 100L
+        const val FIND_PATH_DELAY = 3600L
     }
 }
