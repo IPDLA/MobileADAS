@@ -70,6 +70,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     speed *= METER_PER_SEC_TO_KILOMETER_PER_HOUR * SPEED_CORRECTION_VALUE
                     mainViewModel.initSpeed(speed.toInt())
                     if (mainViewModel.isGuide.value == true) UpdateTMapView()
+                    lastTMapPoint = TMapPoint(lastTMapPoint.latitude, lastTMapPoint.longitude)
                 }
             }
         }
