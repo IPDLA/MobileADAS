@@ -281,6 +281,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     companion object {
         const val REQUEST_LOCATION_PERMISSION = 0
         const val METER_PER_SEC_TO_KILOMETER_PER_HOUR = 3600 / 1000
-        const val SPEED_CORRECTION_VALUE = 1.5
+        const val SPEED_CORRECTION_VALUE = 1.35
     }
 }
