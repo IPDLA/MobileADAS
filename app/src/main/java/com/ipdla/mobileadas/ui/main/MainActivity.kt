@@ -93,8 +93,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 //                            val tMapPolyLine =
 //                                TMapData().findPathData(presentTMapPoint, destinationPoint)
 
-            tMapPolyLine.lineColor = getColor(R.color.light_red)
-            tMapPolyLine.outLineColor = getColor(R.color.light_red)
+            tMapPolyLine.lineColor = getColor(R.color.light_blue)
+            tMapPolyLine.outLineColor = getColor(R.color.light_blue)
             tMapPolyLine.lineWidth = 30f
             tMapPolyLine.outLineWidth = 50f
             mainViewModel.initDistance(tMapPolyLine.distance.toInt())
