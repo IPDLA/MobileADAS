@@ -69,16 +69,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     var speed = locationResult.lastLocation?.speed!!.toDouble()
                     speed *= METER_PER_SEC_TO_KILOMETER_PER_HOUR * SPEED_CORRECTION_VALUE
                     mainViewModel.initSpeed(speed.toInt())
-
-                    if (mainViewModel.isGuide.value == true) {
-                        UpdateTmapView()
-                    }
+                    if (mainViewModel.isGuide.value == true) UpdateTMapView()
                 }
             }
         }
     }
 
-    private fun UpdateTmapView() {
+    private fun UpdateTMapView() {
         tMapView.setCenterPoint(presentTMapPoint.longitude,
             presentTMapPoint.latitude)
         tMapView.setLocationPoint(presentTMapPoint.longitude,
@@ -108,7 +105,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     private fun initLocationRequest() {
         locationRequest = LocationRequest.create().apply {
-            interval = 100
+            interval = LOCATION_REQUEST_INTERVAL
             priority = Priority.PRIORITY_HIGH_ACCURACY
         }
     }
@@ -140,9 +137,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     val destination = it.data?.getStringExtra("destination").toString()
                     val lat = it.data?.getDoubleExtra("latitude", 0.0)
                     val lon = it.data?.getDoubleExtra("longitude", 0.0)
-                    if (lat != 0.0 && lon != 0.0) {
-                        destinationPoint = TMapPoint(lat!!, lon!!)
-                    }
+                    if (lat != 0.0 && lon != 0.0) destinationPoint = TMapPoint(lat!!, lon!!)
                     mainViewModel.initDestination(destination)
                     mainViewModel.initIsGuide(true)
                     initTMapView()
@@ -282,5 +277,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         const val REQUEST_LOCATION_PERMISSION = 0
         const val METER_PER_SEC_TO_KILOMETER_PER_HOUR = 3600 / 1000
         const val SPEED_CORRECTION_VALUE = 1.35
+        const val LOCATION_REQUEST_INTERVAL = 100L
     }
 }
