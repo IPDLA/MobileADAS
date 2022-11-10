@@ -6,7 +6,6 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Looper
@@ -26,10 +25,9 @@ import com.skt.Tmap.TMapData
 import com.skt.Tmap.TMapPoint
 import com.skt.Tmap.TMapView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.abs
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -40,7 +38,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private lateinit var tMapView: TMapView
-    private lateinit var previousLocation: Location
     private lateinit var presentTMapPoint: TMapPoint
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
@@ -69,51 +66,46 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             override fun onLocationResult(locationResult: LocationResult) {
                 val presentLocation = locationResult.lastLocation
                 if (presentLocation != null) {
-                    var speed = 0.0
-                    if (::previousLocation.isInitialized) {
-                        val deltaTime = (presentLocation.time - previousLocation.time) / 1000.0
-                        speed = abs(previousLocation.distanceTo(presentLocation) / deltaTime)
-                    }
-                    previousLocation = presentLocation
-                    presentTMapPoint =
-                        TMapPoint(presentLocation.latitude, presentLocation.longitude)
+                    var speed = locationResult.lastLocation?.speed!!.toDouble()
+                    speed *= METER_PER_SEC_TO_KILOMETER_PER_HOUR * SPEED_CORRECTION_VALUE
                     mainViewModel.initSpeed(speed.toInt())
-
-                    if (mainViewModel.isGuide.value == true) {
-                        tMapView.setCenterPoint(presentTMapPoint.longitude,
-                            presentTMapPoint.latitude)
-                        tMapView.setLocationPoint(presentTMapPoint.longitude,
-                            presentTMapPoint.latitude)
-
-                        CoroutineScope(IO).launch {
-                            delay(3600)
-                            // 자동차 경로 안내
-//                            val tMapPolyLine =
-//                                TMapData().findPathData(presentTMapPoint, destinationPoint)
-
-                            // 보행자 경로 안내
-                            val tMapPolyLine =
-                                TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
-                                    presentTMapPoint,
-                                    destinationPoint)
-
-                            tMapPolyLine.lineColor = getColor(R.color.light_red)
-                            tMapPolyLine.outLineColor = getColor(R.color.light_red)
-                            tMapPolyLine.lineWidth = 30f
-                            tMapPolyLine.outLineWidth = 50f
-                            mainViewModel.initDistance(tMapPolyLine.distance.toInt())
-                            tMapView.addTMapPolyLine("Line1", tMapPolyLine)
-                            tMapView.setCompassMode(true)
-                        }
-                    }
+                    if (mainViewModel.isGuide.value == true) UpdateTMapView()
                 }
             }
         }
     }
 
+    private fun UpdateTMapView() {
+        tMapView.setCenterPoint(presentTMapPoint.longitude,
+            presentTMapPoint.latitude)
+        tMapView.setLocationPoint(presentTMapPoint.longitude,
+            presentTMapPoint.latitude)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(3600)
+            // 보행자 경로 안내
+            val tMapPolyLine =
+                TMapData().findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH,
+                    presentTMapPoint,
+                    destinationPoint)
+
+            // 자동차 경로 안내
+//                            val tMapPolyLine =
+//                                TMapData().findPathData(presentTMapPoint, destinationPoint)
+
+            tMapPolyLine.lineColor = getColor(R.color.light_red)
+            tMapPolyLine.outLineColor = getColor(R.color.light_red)
+            tMapPolyLine.lineWidth = 30f
+            tMapPolyLine.outLineWidth = 50f
+            mainViewModel.initDistance(tMapPolyLine.distance.toInt())
+            tMapView.addTMapPolyLine("Line1", tMapPolyLine)
+            tMapView.setCompassMode(true)
+        }
+    }
+
     private fun initLocationRequest() {
         locationRequest = LocationRequest.create().apply {
-            interval = 5000
+            interval = LOCATION_REQUEST_INTERVAL
             priority = Priority.PRIORITY_HIGH_ACCURACY
         }
     }
@@ -145,9 +137,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     val destination = it.data?.getStringExtra("destination").toString()
                     val lat = it.data?.getDoubleExtra("latitude", 0.0)
                     val lon = it.data?.getDoubleExtra("longitude", 0.0)
-                    if (lat != 0.0 && lon != 0.0) {
-                        destinationPoint = TMapPoint(lat!!, lon!!)
-                    }
+                    if (lat != 0.0 && lon != 0.0) destinationPoint = TMapPoint(lat!!, lon!!)
                     mainViewModel.initDestination(destination)
                     mainViewModel.initIsGuide(true)
                     initTMapView()
@@ -285,5 +275,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     companion object {
         const val REQUEST_LOCATION_PERMISSION = 0
+        const val METER_PER_SEC_TO_KILOMETER_PER_HOUR = 3600 / 1000
+        const val SPEED_CORRECTION_VALUE = 1.35
+        const val LOCATION_REQUEST_INTERVAL = 100L
     }
 }
