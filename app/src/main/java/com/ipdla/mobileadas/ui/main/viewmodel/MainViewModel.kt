@@ -33,7 +33,7 @@ class MainViewModel : ViewModel() {
     //지준호 추가
     private val _newTraffic = MutableLiveData("")
     var newTraffic: LiveData<String> = _newTraffic
-    private var prevTraffic: String = ""
+    private var timeLeft: Int = 3   //이미지를 띄우는 남은 시간
 
     private var speedLimit = -1
 
@@ -69,11 +69,11 @@ class MainViewModel : ViewModel() {
     fun initTraffic(sign: String){
         _newTraffic.postValue(sign)
     }
-    fun setPrevTraffic(sign: String){
-        prevTraffic = sign
+    fun setTime(time: Int){
+        timeLeft = time
     }
-    fun getPrevTraffic(): String{
-        return prevTraffic
+    fun getTime(): Int {
+        return timeLeft
     }
 
     fun setSpeedLimit(limit: Int){
