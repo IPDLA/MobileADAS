@@ -265,7 +265,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     }
                 }
 
-                //여기에서 제한속도를 지정할 것
+                //제한 속도 지정
                 if(nonOverlapTraffic != "") {
                     for(data in nonOverlapTrafficList){
                         when(data){
