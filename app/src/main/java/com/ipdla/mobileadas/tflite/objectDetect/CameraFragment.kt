@@ -257,10 +257,9 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
         //표지판의 우선순위에 따라 정렬
         val sortedList = nonOverlappingList.sortedWith(signComparator)
-        if(sortedList.isNotEmpty()) {
+        if(sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
             mainViewModel.initTraffic(sortedList[sortedList.lastIndex].categories[0].label)
-            mainViewModel.setTime(3)
-        } else{
+        } else{ //탐지한 표지판이 없는 경우 ==> timeLeft는 건들 필요 X
             mainViewModel.initTraffic("")
         }
 

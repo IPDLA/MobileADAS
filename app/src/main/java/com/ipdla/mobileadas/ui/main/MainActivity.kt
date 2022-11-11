@@ -249,17 +249,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     "restriction_speed40"->mainViewModel.setSpeedLimit(40)
                 }
 
-                val timeLeft = mainViewModel.getTime()
+                //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
                 if(newTraffic.isNotEmpty()) {
+                    mainViewModel.setTime(3)
                     timerTask.cancel()
                     timerTask = timer(period = 1000) {
                         if (mainViewModel.getTime() == 0)
                             timerTask.cancel()
+                        val timeLeft = mainViewModel.getTime()
                         println("$newTraffic/$timeLeft")
                         mainViewModel.setTime(timeLeft - 1)
                     }
-
-
                 }
             }
         }

@@ -33,7 +33,7 @@ class MainViewModel : ViewModel() {
     //지준호 추가
     private val _newTraffic = MutableLiveData("")
     var newTraffic: LiveData<String> = _newTraffic
-    private var timeLeft: Int = 3
+    private var timeLeft: Int = 3   //이미지를 띄우는 남은 시간
 
     private var speedLimit = -1
 
