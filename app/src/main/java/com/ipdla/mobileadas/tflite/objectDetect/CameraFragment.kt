@@ -131,7 +131,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                         }
 
                         detectObjects(image)
-                        //detectTraffics(image)
                     }
                 }
         cameraProvider.unbindAll()
@@ -199,16 +198,23 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                 var calculatedWidth = (boundingBox.width() * scaleFactor) / imageWidth
                 var calculatedHeight = (boundingBox.height() * scaleFactor) / imageHeight
 
+                var calculatedCenterX = (boundingBox.centerX() * scaleFactor) / imageWidth
+                var calculatedCenterY = (boundingBox.centerY() * scaleFactor) / imageHeight
+
+
                 when (label) {
                     "person" ->{
-                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f && checkCrashCondition(calculatedCenterX)) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(3)
-                        }else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(calculatedCenterX)) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(2)
-                        }else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f && checkCrashCondition(calculatedCenterX)) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
@@ -241,6 +247,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
             }
         }
         return true
+    }
+
+    private fun checkCrashCondition(centerX: Float) : Boolean{
+        return centerX > 0.4f && centerX < 0.8f
     }
 
     private fun detectTrafficSigns(trafficResults: MutableList<Detection>) : Boolean{
