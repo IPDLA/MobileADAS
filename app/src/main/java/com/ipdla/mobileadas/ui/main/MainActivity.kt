@@ -30,6 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.processNextEventInCurrentThread
+import java.util.*
+import kotlin.concurrent.timer
 import kotlin.math.abs
 import kotlin.system.exitProcess
 
@@ -45,6 +47,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
     private var prevCautionLevel = 0
+    private var toast: Toast? = null
+    private var timerTask = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -235,42 +239,27 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initTrafficObserver(){
-        //동일한 표지판을 인식한 경우는 예외 처리 ==> 임시 완료
-        //모든 순서가 동일할 때 까지
         mainViewModel.newTraffic.observe(this) {
-            val newTraffic = mainViewModel.newTraffic.value
-            val prevTraffic = mainViewModel.getPrevTraffic()
-
+            val newTraffic = mainViewModel.newTraffic.value //탐지한 것 중 가장 최상위 표지판
             if(newTraffic != null){
-                val newTrafficList = newTraffic.split(", ")     //현재 탐지된 모든 표지판 리스트
-                val prevTrafficList = prevTraffic.split(", ")   //이전에 탐지한 모든 표지판 리스트
-                val nonOverlapTrafficList = mutableListOf<String>() //현재 탐지된 표지판 중 이전 탐지결과와 동일하지 않은 표지판 리스트
-                var nonOverlapTraffic: String = ""                  //현재 탐지된 표지판 중 이전 탐지결과와 동일하지 않은 표지판 문자열
-
-                //이전 탐지 결과와 새로운 탐지 결과가 중복되지 않는 경우만을 추출하여 화면 점등 여부 결정
-                //어린이 보호구역은 해제 표지판이 없는 경우도 있는데, 이럼 표지판 인식 위치와 현재 위치를 비교하면서 제한 속도 30을 결정해야 하나...?
-                for(data in newTrafficList){
-                    if(!prevTrafficList.contains(data)){
-                        nonOverlapTrafficList.add(data)
-                        nonOverlapTraffic = "$nonOverlapTraffic $data"
-                    }
-                }
-
                 //제한 속도 지정
-                if(nonOverlapTraffic != "") {
-                    for(data in nonOverlapTrafficList){
-                        when(data){
-                            "restriction_speed20"->mainViewModel.setSpeedLimit(20)
-                            "caution_children", "instruction_children", "restriction_speed30"->mainViewModel.setSpeedLimit(30)
-                            "restriction_speed40"->mainViewModel.setSpeedLimit(40)
-                        }
+                when(newTraffic){
+                    "restriction_speed20" -> mainViewModel.setSpeedLimit(20)
+                    "caution_children", "instruction_children", "restriction_speed30"->mainViewModel.setSpeedLimit(30)
+                    "restriction_speed40"->mainViewModel.setSpeedLimit(40)
+                }
+
+                val timeLeft = mainViewModel.getTime()
+                if(newTraffic.isNotEmpty()) {
+                    timerTask.cancel()
+                    timerTask = timer(period = 1000) {
+                        if (mainViewModel.getTime() == 0)
+                            timerTask.cancel()
+                        println("$newTraffic/$timeLeft")
+                        mainViewModel.setTime(timeLeft - 1)
                     }
 
-                    val result1 = "NotOverlap: $nonOverlapTraffic"
-                    val result2 = "Everything: " + mainViewModel.newTraffic.value
-                    showToast(result2)
                 }
-                mainViewModel.setPrevTraffic(mainViewModel.newTraffic.value!!)
             }
         }
     }

@@ -131,7 +131,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                         }
 
                         detectObjects(image)
-                        //detectTraffics(image)
                     }
                 }
         cameraProvider.unbindAll()
@@ -247,7 +246,6 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         val nonOverlappingList = mutableListOf<Detection>()
         val nonOverlappingLabelList = mutableListOf<String>()
         val signComparator:Comparator<Detection> = compareBy { it.categories[0].index }
-        var newTraffic = ""
 
         //중복되는 표지판은 하나로 취급
         for(result in trafficResults) {
@@ -259,17 +257,12 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
         //표지판의 우선순위에 따라 정렬
         val sortedList = nonOverlappingList.sortedWith(signComparator)
-
-        //이전 탐지와 결과가 같으면 넘어가야 함
-        var count = 0
-        for (result in sortedList) {
-            newTraffic = if(count != 0)
-                newTraffic + ", " + result.categories[0].label
-            else
-                newTraffic + result.categories[0].label
-            count += 1
+        if(sortedList.isNotEmpty()) {
+            mainViewModel.initTraffic(sortedList[sortedList.lastIndex].categories[0].label)
+            mainViewModel.setTime(3)
+        } else{
+            mainViewModel.initTraffic("")
         }
-        mainViewModel.initTraffic(newTraffic)
 
         return false
     }
