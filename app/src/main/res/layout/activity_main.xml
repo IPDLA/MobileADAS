@@ -21,11 +21,11 @@
 
         <ImageView
             android:id="@+id/iv_main_img_main"
+            setImage="@{mainViewModel.trafficSign}"
             android:layout_width="140dp"
             android:layout_height="0dp"
-            android:visibility="invisible"
             android:layout_marginTop="20dp"
-            android:src="@{mainViewModel.isGuide ? @drawable/ic_test : @drawable/ic_test}"
+            android:visibility="@{mainViewModel.trafficSign == `` ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -50,7 +50,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
         binding.mainViewModel = mainViewModel
 
-
         initLocationCallback()
         initLocationRequest()
         initFusedLocationClient()
@@ -234,34 +233,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         }
     }
 
-    private fun initTrafficObserver() {
-        mainViewModel.newTraffic.observe(this) {
-            val newTraffic = mainViewModel.newTraffic.value //탐지한 것 중 가장 최상위 표지판
-            if (newTraffic != null) {
-                //제한 속도 지정
-                when (newTraffic) {
-                    "restriction_speed20" -> mainViewModel.setSpeedLimit(20)
-                    "caution_children", "instruction_children", "restriction_speed30" -> mainViewModel.setSpeedLimit(
-                        30)
-                    "restriction_speed40" -> mainViewModel.setSpeedLimit(40)
-                }
-
-                //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
-                if (newTraffic.isNotEmpty()) {
-                    mainViewModel.setTime(3)
-                    timerTask.cancel()
-                    timerTask = timer(period = 1000) {
-                        if (mainViewModel.getTime() == 0)
-                            timerTask.cancel()
-                        val timeLeft = mainViewModel.getTime()
-                        println("$newTraffic/$timeLeft")
-                        mainViewModel.setTime(timeLeft - 1)
-                    }
-                }
-            }
-        }
-    }
-
     private fun initIsSoundOnObserver() {
         mainViewModel.isSoundOn.observe(this) {
             if (mainViewModel.isSoundOn.value == false) {
@@ -277,6 +248,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
                     mainViewModel.initIsGuide(false)
                     showToast(getString(R.string.main_arrival_at_destination))
+                }
+            }
+        }
+    }
+
+    private fun initTrafficObserver() {
+        mainViewModel.trafficSign.observe(this) {
+            val trafficSign = mainViewModel.trafficSign.value //탐지한 것 중 가장 최상위 표지판
+            if (trafficSign != null) {
+                //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
+                mainViewModel.setTime(3)
+                timerTask.cancel()
+                timerTask = timer(period = 1000) {
+                    if (mainViewModel.getTime() == 0)
+                        timerTask.cancel()
+                    val timeLeft = mainViewModel.getTime()
+                    println("$trafficSign/$timeLeft")
+                    mainViewModel.setTime(timeLeft - 1)
                 }
             }
         }
