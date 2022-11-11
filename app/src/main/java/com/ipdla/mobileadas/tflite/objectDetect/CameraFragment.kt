@@ -23,8 +23,11 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.Comparator
 
-class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_camera), ObjectDetectionHelper.DetectorListener {
+class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_camera),
+    ObjectDetectionHelper.DetectorListener
+{
     private val mainViewModel by activityViewModels<MainViewModel>()
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
     private val fragmentCameraBinding
@@ -128,6 +131,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                         }
 
                         detectObjects(image)
+                        //detectTraffics(image)
                     }
                 }
         cameraProvider.unbindAll()
@@ -153,40 +157,27 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     }
 
     override fun onResults(
+        trafficResults: MutableList<Detection>?,
         results: MutableList<Detection>?,
         inferenceTime: Long,
-        trafficResults: MutableList<Detection>?,
-        trafficInferenceTime: Long,
         imageHeight: Int,
         imageWidth: Int
     ) {
         activity?.runOnUiThread {
-            var flag = true
             if (results != null) {
-                if (results.isNotEmpty()){
-                    flag = detectObjectByLabel(results,imageHeight,imageWidth)
-                } else{
-                    if (trafficResults != null) {
-                        flag = detectTrafficSigns(trafficResults, imageHeight, imageWidth)
-                    }
-                }
+                detectObjectByLabel(results, imageHeight, imageWidth)
+            }
+            if (trafficResults != null){
+                detectTrafficSigns(trafficResults)
             }
 
             // Pass necessary information to OverlayView for drawing on the canvas
-            if (flag) {
-                fragmentCameraBinding.overlay.setResults(
-                    results ?: LinkedList<Detection>(),
-                    imageHeight,
-                    imageWidth
-                )
-            } else{
-                fragmentCameraBinding.overlay.setResults(
-                    trafficResults ?: LinkedList<Detection>(),
-                    imageHeight,
-                    imageWidth
-                )
-            }
-
+            fragmentCameraBinding.overlay.setResults(
+                results ?: LinkedList<Detection>(),
+                trafficResults ?: LinkedList<Detection>(),
+                imageHeight,
+                imageWidth
+            )
             fragmentCameraBinding.overlay.invalidate()
         }
     }
@@ -252,19 +243,31 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         return true
     }
 
-    private fun detectTrafficSigns(trafficResults: MutableList<Detection>,
-                                   imageHeight: Int,
-                                   imageWidth: Int) : Boolean{
-        for (result in trafficResults) {
-            val boundingBox = result.boundingBox
+    private fun detectTrafficSigns(trafficResults: MutableList<Detection>) : Boolean{
+        val nonOverlappingList = mutableListOf<Detection>()
+        val signComparator:Comparator<Detection> = compareBy { it.categories[0].index }
+        var newTraffic = ""
 
-            val width = boundingBox.width() * scaleFactor
-            val height = boundingBox.height() * scaleFactor
-
-            if (width / imageWidth > 0.7f && height / imageHeight > 0.5f) {
-                Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+        //중복되는 표지판은 하나로 취급
+        for(result in trafficResults) {
+            if (!newTraffic.contains(result.categories[0].label)) {
+                nonOverlappingList.add(result)
             }
         }
+
+        //표지판의 우선순위에 따라 정렬
+        val sortedList = nonOverlappingList.sortedWith(signComparator)
+
+        //이전 탐지와 결과가 같으면 넘어가야 함
+        var count = 0
+        for (result in sortedList) {
+            newTraffic = if(count != 0)
+                newTraffic + ", " + result.categories[0].label
+            else
+                newTraffic + result.categories[0].label
+            count += 1
+        }
+        mainViewModel.initTraffic(newTraffic)
 
         return false
     }

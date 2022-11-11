@@ -3,6 +3,7 @@ package com.ipdla.mobileadas.ui.main.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import org.tensorflow.lite.task.vision.detector.Detection
 
 class MainViewModel : ViewModel() {
     private val _isCaution = MutableLiveData(false)
@@ -28,6 +29,11 @@ class MainViewModel : ViewModel() {
 
     private val _distance = MutableLiveData(0)
     val distance: LiveData<Int> = _distance
+
+    //지준호 추가
+    private val _newTraffic = MutableLiveData("")
+    var newTraffic: LiveData<String> = _newTraffic
+    private var prevTraffic: String = ""
 
     fun initIsCaution(isCaution: Boolean) {
         _isCaution.postValue(isCaution)
@@ -55,5 +61,16 @@ class MainViewModel : ViewModel() {
 
     fun initDistance(distance: Int) {
         _distance.postValue(distance)
+    }
+
+    //지준호 추가
+    fun initTraffic(sign: String){
+        _newTraffic.postValue(sign)
+    }
+    fun setPrevTraffic(sign: String){
+        prevTraffic = sign
+    }
+    fun getPrevTraffic(): String{
+        return prevTraffic
     }
 }

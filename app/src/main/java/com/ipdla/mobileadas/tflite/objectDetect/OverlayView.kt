@@ -17,7 +17,7 @@ import org.tensorflow.lite.task.vision.detector.Detection
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private var results: List<Detection> = LinkedList<Detection>()
-    private var trafficReuslts: List<Detection> = LinkedList<Detection>()
+    //private var trafficReuslts: List<Detection> = LinkedList<Detection>()
     private var boxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
@@ -88,11 +88,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     fun setResults(
       detectionResults: MutableList<Detection>,
+      detectionTrafficResults: MutableList<Detection>,
       imageHeight: Int,
       imageWidth: Int,
     ) {
-        results = detectionResults
-
+        results = detectionResults + detectionTrafficResults
         scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
     }
 

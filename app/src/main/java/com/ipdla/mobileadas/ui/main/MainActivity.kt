@@ -10,6 +10,7 @@ import android.location.Location
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Looper
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -29,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.processNextEventInCurrentThread
 import kotlin.math.abs
 import kotlin.system.exitProcess
 
@@ -50,6 +52,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
         binding.mainViewModel = mainViewModel
 
+
         initLocationCallback()
         initLocationRequest()
         initFusedLocationClient()
@@ -62,6 +65,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initCautionLevelObserver()
         initIsSoundOnObserver()
         initDistanceObserver()
+        initTrafficObserver()
     }
 
     private fun initLocationCallback() {
@@ -235,6 +239,36 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     prevCautionLevel = level
                 }
                 mediaPlayer.start()
+            }
+        }
+    }
+
+    private fun initTrafficObserver(){
+        //동일한 표지판을 인식한 경우는 예외 처리 ==> 임시 완료
+        //모든 순서가 동일할 때 까지
+        mainViewModel.newTraffic.observe(this) {
+            val newTraffic = mainViewModel.newTraffic.value
+            val prevTraffic = mainViewModel.getPrevTraffic()
+
+            if(newTraffic != null){
+                val newTrafficList = newTraffic.split(", ")
+                val prevTrafficList = prevTraffic.split(", ")
+                val nonOverlapTrafficList = mutableListOf<String>() //중복되지 않는 표지판 리스트
+                var nonOverlapTraffic: String = ""                  //중복되지 않는 표지판 문자열
+
+                //이전 탐지 결과와 새로운 탐지 결과가 중복되지 않는 경우만을 추출하여 화면 점등 여부 결정
+                //어린이 보호구역은 해제 표지판이 없는 경우도 있는데, 이럼 표지판 인식 위치와 현재 위치를 비교하면서 제한 속도 30을 결정해야 하나...?
+                for(data in newTrafficList){
+                    if(!prevTrafficList.contains(data)){
+                        nonOverlapTrafficList.add(data)
+                        nonOverlapTraffic += " "
+                    }
+                }
+
+                if(nonOverlapTraffic != "") {
+                    showToast(nonOverlapTraffic)
+                }
+                mainViewModel.setPrevTraffic(mainViewModel.newTraffic.value!!)
             }
         }
     }
