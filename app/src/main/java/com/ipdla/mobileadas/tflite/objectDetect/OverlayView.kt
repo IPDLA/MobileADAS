@@ -1,31 +1,32 @@
 package com.ipdla.mobileadas.tflite.objectDetect
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.ipdla.mobileadas.R
-import java.util.LinkedList
-import kotlin.math.max
 import org.tensorflow.lite.task.vision.detector.Detection
+import java.util.*
+import kotlin.math.max
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private var results: List<Detection> = LinkedList<Detection>()
-    //private var trafficReuslts: List<Detection> = LinkedList<Detection>()
     private var boxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
-    private var targetList = listOf("person", "car", "bus", "bicycle", "truck")
-
     private var scaleFactor: Float = 1f
-
     private var bounds = Rect()
+    private var targetList = listOf("person",
+        "car",
+        "bus",
+        "bicycle",
+        "truck",
+        "caution_bump",
+        "instruction_children",
+        "instruction_crosswalk",
+        "restriction_speed30")
 
     init {
         initPaints()
@@ -90,10 +91,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     }
 
     fun setResults(
-      detectionResults: MutableList<Detection>,
-      detectionTrafficResults: MutableList<Detection>,
-      imageHeight: Int,
-      imageWidth: Int,
+        detectionResults: MutableList<Detection>,
+        detectionTrafficResults: MutableList<Detection>,
+        imageHeight: Int,
+        imageWidth: Int,
     ) {
         results = detectionResults + detectionTrafficResults
         scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
