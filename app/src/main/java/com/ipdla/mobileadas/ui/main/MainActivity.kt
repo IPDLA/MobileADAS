@@ -62,7 +62,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initCautionLevelObserver()
         initIsSoundOnObserver()
         initDistanceObserver()
-        initTrafficObserver()
+        initTrafficSignObserver()
     }
 
     private fun initLocationCallback() {
@@ -253,7 +253,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         }
     }
 
-    private fun initTrafficObserver() {
+    private fun initTrafficSignObserver() {
         mainViewModel.trafficSign.observe(this) {
             val trafficSign = mainViewModel.trafficSign.value //탐지한 것 중 가장 최상위 표지판
             if (trafficSign != null) {
