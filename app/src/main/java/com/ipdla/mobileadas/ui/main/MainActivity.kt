@@ -75,13 +75,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                     speed *= METER_PER_SEC_TO_KILOMETER_PER_HOUR * SPEED_CORRECTION_VALUE
                     mainViewModel.initSpeed(speed.toInt())
                     lastTMapPoint = TMapPoint(lastLocation.latitude, lastLocation.longitude)
-                    if (mainViewModel.isGuide.value == true) UpdateTMapView()
+                    if (mainViewModel.isGuide.value == true) updateTMapView()
                 }
             }
         }
     }
 
-    private fun UpdateTMapView() {
+    private fun updateTMapView() {
         tMapView.setCenterPoint(lastTMapPoint.longitude,
             lastTMapPoint.latitude)
         tMapView.setLocationPoint(lastTMapPoint.longitude,
