@@ -259,6 +259,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                         mainViewModel.setTime(timeLeft - 1)
                     }
 
+
                 }
             }
         }
