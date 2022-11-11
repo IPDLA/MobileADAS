@@ -21,7 +21,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var boxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
-    private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
+    private var targetList = listOf("person", "car", "bus", "bicycle", "truck")
 
     private var scaleFactor: Float = 1f
 
