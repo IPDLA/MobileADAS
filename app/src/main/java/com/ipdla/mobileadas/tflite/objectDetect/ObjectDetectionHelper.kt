@@ -21,6 +21,9 @@ class ObjectDetectionHelper(
     fun clearObjectDetector() {
         objectDetector = null
     }
+    fun clearTrafficDetector() {
+        trafficDetector = null
+    }
 
     fun setObjectDetector(){
         val optionsBuilder =
@@ -42,10 +45,11 @@ class ObjectDetectionHelper(
             Log.e("Test", "TFLite failed to load model with error: " + e.message)
         }
     }
+
     fun setTrafficDetector(){
         val optionsBuilder =
             ObjectDetector.ObjectDetectorOptions.builder()
-                .setScoreThreshold(0.6f)
+                .setScoreThreshold(0.8f)
                 .setMaxResults(3)
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(2)
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
@@ -64,35 +68,25 @@ class ObjectDetectionHelper(
     }
 
     fun detect(image: Bitmap, imageRotation: Int) {
-        if (objectDetector == null) {
+        if (objectDetector == null)
             setObjectDetector()
-        }
-        //추가
-        if (trafficDetector == null) {
+        if(trafficDetector == null)
             setTrafficDetector()
-        }
 
         var inferenceTime = SystemClock.uptimeMillis()
-        var trafficInferenceTime = SystemClock.uptimeMillis()
-
         val imageProcessor =
             ImageProcessor.Builder()
                 .add(Rot90Op(-imageRotation / 90))
                 .build()
-
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
-
         val results = objectDetector?.detect(tensorImage)
         val trafficResults = trafficDetector?.detect(tensorImage)
 
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
-        trafficInferenceTime = SystemClock.uptimeMillis() - trafficInferenceTime
-
         objectDetectorListener?.onResults(
+            trafficResults,
             results,
             inferenceTime,
-            trafficResults,
-            trafficInferenceTime,
             tensorImage.height,
             tensorImage.width)
     }
@@ -100,10 +94,9 @@ class ObjectDetectionHelper(
     interface DetectorListener {
         fun onError(error: String)
         fun onResults(
+            trafficResults: MutableList<Detection>?,
             results: MutableList<Detection>?,
             inferenceTime: Long,
-            trafficResults: MutableList<Detection>?,
-            trafficInferenceTime: Long,
             imageHeight: Int,
             imageWidth: Int
         )
