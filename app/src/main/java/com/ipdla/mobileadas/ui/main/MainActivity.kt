@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Looper
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -29,10 +28,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.processNextEventInCurrentThread
 import java.util.*
 import kotlin.concurrent.timer
-import kotlin.math.abs
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -47,7 +44,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
     private var prevCautionLevel = 0
-    private var toast: Toast? = null
     private var timerTask = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -238,19 +234,20 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         }
     }
 
-    private fun initTrafficObserver(){
+    private fun initTrafficObserver() {
         mainViewModel.newTraffic.observe(this) {
             val newTraffic = mainViewModel.newTraffic.value //탐지한 것 중 가장 최상위 표지판
-            if(newTraffic != null){
+            if (newTraffic != null) {
                 //제한 속도 지정
-                when(newTraffic){
+                when (newTraffic) {
                     "restriction_speed20" -> mainViewModel.setSpeedLimit(20)
-                    "caution_children", "instruction_children", "restriction_speed30"->mainViewModel.setSpeedLimit(30)
-                    "restriction_speed40"->mainViewModel.setSpeedLimit(40)
+                    "caution_children", "instruction_children", "restriction_speed30" -> mainViewModel.setSpeedLimit(
+                        30)
+                    "restriction_speed40" -> mainViewModel.setSpeedLimit(40)
                 }
 
                 //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
-                if(newTraffic.isNotEmpty()) {
+                if (newTraffic.isNotEmpty()) {
                     mainViewModel.setTime(3)
                     timerTask.cancel()
                     timerTask = timer(period = 1000) {
