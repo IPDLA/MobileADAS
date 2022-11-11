@@ -211,8 +211,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initIsCautionObserver() {
-        mainViewModel.isCaution.observe(this) {
-            if (mainViewModel.isCaution.value == true) {
+        mainViewModel.isCaution.observe(this) { isCaution ->
+            if (isCaution) {
                 animationColorChange.start()
             } else {
                 animationColorChange.end()
@@ -221,12 +221,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initCautionLevelObserver() {
-        mainViewModel.cautionLevel.observe(this) {
-            val level = mainViewModel.cautionLevel.value
-            if (mainViewModel.isSoundOn.value == true && (level == 1 || level == 2 || level == 3)) {
-                if (mainViewModel.cautionLevel.value != prevCautionLevel) {
-                    initSoundEffect(level)
-                    prevCautionLevel = level
+        mainViewModel.cautionLevel.observe(this) { cautionLevel ->
+            if (mainViewModel.isSoundOn.value == true && (cautionLevel == 1 || cautionLevel == 2 || cautionLevel == 3)) {
+                if (cautionLevel != prevCautionLevel) {
+                    initSoundEffect(cautionLevel)
+                    prevCautionLevel = cautionLevel
                 }
                 mediaPlayer.start()
             }
@@ -234,8 +233,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initIsSoundOnObserver() {
-        mainViewModel.isSoundOn.observe(this) {
-            if (mainViewModel.isSoundOn.value == false) {
+        mainViewModel.isSoundOn.observe(this) { isSoundOn ->
+            if (isSoundOn) {
                 if (mediaPlayer.isPlaying) mediaPlayer.stop()
             }
             initSoundEffect(0)
@@ -243,9 +242,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initDistanceObserver() {
-        mainViewModel.distance.observe(this) {
+        mainViewModel.distance.observe(this) { distance ->
             if (mainViewModel.isGuide.value == true) {
-                if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
+                if (distance in 1 until 20) {
                     mainViewModel.initIsGuide(false)
                     showToast(getString(R.string.main_arrival_at_destination))
                 }
@@ -254,8 +253,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     }
 
     private fun initTrafficSignObserver() {
-        mainViewModel.trafficSign.observe(this) {
-            val trafficSign = mainViewModel.trafficSign.value //탐지한 것 중 가장 최상위 표지판
+        mainViewModel.trafficSign.observe(this) { trafficSign ->
             if (trafficSign != null) {
                 //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
                 mainViewModel.setTime(3)
