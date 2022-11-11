@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,11 +22,9 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.Comparator
 
 class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_camera),
-    ObjectDetectionHelper.DetectorListener
-{
+    ObjectDetectionHelper.DetectorListener {
     private val mainViewModel by activityViewModels<MainViewModel>()
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
     private val fragmentCameraBinding
@@ -64,7 +61,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
 
@@ -160,13 +157,13 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         results: MutableList<Detection>?,
         inferenceTime: Long,
         imageHeight: Int,
-        imageWidth: Int
+        imageWidth: Int,
     ) {
         activity?.runOnUiThread {
             if (results != null) {
                 detectObjectByLabel(results, imageHeight, imageWidth)
             }
-            if (trafficResults != null){
+            if (trafficResults != null) {
                 detectTrafficSigns(trafficResults)
             }
 
@@ -187,9 +184,11 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         }
     }
 
-    private fun detectObjectByLabel(results: MutableList<Detection>,
-                                    imageHeight: Int,
-                                    imageWidth: Int) : Boolean{
+    private fun detectObjectByLabel(
+        results: MutableList<Detection>,
+        imageHeight: Int,
+        imageWidth: Int,
+    ): Boolean {
         for (result in results) {
             if (targetList.contains(result.categories[0].label)) {
                 val boundingBox = result.boundingBox
@@ -203,42 +202,54 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
 
                 when (label) {
-                    "person" ->{
-                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f && checkCrashCondition(calculatedCenterX)) {
+                    "person" -> {
+                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f && checkCrashCondition(
+                                calculatedCenterX)
+                        ) {
                             Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
                                 .show()
                             mainViewModel.initCautionLevel(3)
-                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(calculatedCenterX)) {
+                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(
+                                calculatedCenterX)
+                        ) {
                             Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
                                 .show()
                             mainViewModel.initCautionLevel(2)
-                        } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f && checkCrashCondition(calculatedCenterX)) {
+                        } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f && checkCrashCondition(
+                                calculatedCenterX)
+                        ) {
                             Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
                                 .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
-                    "bicycle" ->{
+                    "bicycle" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(3)
-                        }else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(2)
-                        }else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
-                    "car" ->{
+                    "car" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.4f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(3)
-                        }else if (calculatedWidth > 0.3f && calculatedHeight > 0.3f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.3f) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(2)
-                        }else if (calculatedWidth > 0.2f && calculatedHeight > 0.2f) {
-                            Toast.makeText(context,result.categories[0].label,Toast.LENGTH_SHORT).show()
+                        } else if (calculatedWidth > 0.2f && calculatedHeight > 0.2f) {
+                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
@@ -249,17 +260,17 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         return true
     }
 
-    private fun checkCrashCondition(centerX: Float) : Boolean{
+    private fun checkCrashCondition(centerX: Float): Boolean {
         return centerX > 0.4f && centerX < 0.8f
     }
 
-    private fun detectTrafficSigns(trafficResults: MutableList<Detection>) : Boolean{
+    private fun detectTrafficSigns(trafficResults: MutableList<Detection>): Boolean {
         val nonOverlappingList = mutableListOf<Detection>()
         val nonOverlappingLabelList = mutableListOf<String>()
-        val signComparator:Comparator<Detection> = compareBy { it.categories[0].index }
+        val signComparator: Comparator<Detection> = compareBy { it.categories[0].index }
 
         //중복되는 표지판은 하나로 취급
-        for(result in trafficResults) {
+        for (result in trafficResults) {
             if (!nonOverlappingLabelList.contains(result.categories[0].label)) {
                 nonOverlappingList.add(result)                          //이 리스트는 후에 정렬된다.
                 nonOverlappingLabelList.add(result.categories[0].label) //이 리스트는 그저 라벨 확인용. 정렬되지 않음
@@ -268,10 +279,10 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
         //표지판의 우선순위에 따라 정렬
         val sortedList = nonOverlappingList.sortedWith(signComparator)
-        if(sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
-            mainViewModel.initTraffic(sortedList[sortedList.lastIndex].categories[0].label)
-        } else{ //탐지한 표지판이 없는 경우 ==> timeLeft는 건들 필요 X
-            mainViewModel.initTraffic("")
+        if (sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
+            mainViewModel.initTrafficSign(sortedList[sortedList.lastIndex].categories[0].label)
+        } else { //탐지한 표지판이 없는 경우 ==> timeLeft는 건들 필요 X
+            mainViewModel.initTrafficSign("")
         }
 
         return false

@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Looper
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -29,10 +28,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.processNextEventInCurrentThread
 import java.util.*
 import kotlin.concurrent.timer
-import kotlin.math.abs
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -47,13 +44,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
     private var prevCautionLevel = 0
-    private var toast: Toast? = null
     private var timerTask = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.mainViewModel = mainViewModel
-
 
         initLocationCallback()
         initLocationRequest()
@@ -67,7 +62,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initCautionLevelObserver()
         initIsSoundOnObserver()
         initDistanceObserver()
-        initTrafficObserver()
+        initTrafficSignObserver()
     }
 
     private fun initLocationCallback() {
@@ -238,33 +233,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         }
     }
 
-    private fun initTrafficObserver(){
-        mainViewModel.newTraffic.observe(this) {
-            val newTraffic = mainViewModel.newTraffic.value //탐지한 것 중 가장 최상위 표지판
-            if(newTraffic != null){
-                //제한 속도 지정
-                when(newTraffic){
-                    "restriction_speed20" -> mainViewModel.setSpeedLimit(20)
-                    "caution_children", "instruction_children", "restriction_speed30"->mainViewModel.setSpeedLimit(30)
-                    "restriction_speed40"->mainViewModel.setSpeedLimit(40)
-                }
-
-                //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
-                if(newTraffic.isNotEmpty()) {
-                    mainViewModel.setTime(3)
-                    timerTask.cancel()
-                    timerTask = timer(period = 1000) {
-                        if (mainViewModel.getTime() == 0)
-                            timerTask.cancel()
-                        val timeLeft = mainViewModel.getTime()
-                        println("$newTraffic/$timeLeft")
-                        mainViewModel.setTime(timeLeft - 1)
-                    }
-                }
-            }
-        }
-    }
-
     private fun initIsSoundOnObserver() {
         mainViewModel.isSoundOn.observe(this) {
             if (mainViewModel.isSoundOn.value == false) {
@@ -280,6 +248,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 if (mainViewModel.distance.value!!.toInt() in 1 until 20) {
                     mainViewModel.initIsGuide(false)
                     showToast(getString(R.string.main_arrival_at_destination))
+                }
+            }
+        }
+    }
+
+    private fun initTrafficSignObserver() {
+        mainViewModel.trafficSign.observe(this) {
+            val trafficSign = mainViewModel.trafficSign.value //탐지한 것 중 가장 최상위 표지판
+            if (trafficSign != null) {
+                //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
+                mainViewModel.setTime(3)
+                timerTask.cancel()
+                timerTask = timer(period = 1000) {
+                    if (mainViewModel.getTime() == 0)
+                        timerTask.cancel()
+                    val timeLeft = mainViewModel.getTime()
+                    println("$trafficSign/$timeLeft")
+                    mainViewModel.setTime(timeLeft - 1)
                 }
             }
         }
