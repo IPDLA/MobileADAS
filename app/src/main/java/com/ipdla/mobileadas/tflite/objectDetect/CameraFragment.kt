@@ -192,64 +192,60 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         for (result in results) {
             if (targetList.contains(result.categories[0].label)) {
                 val boundingBox = result.boundingBox
-                var label = result.categories[0].label
-
-                var calculatedWidth = (boundingBox.width() * scaleFactor) / imageWidth
-                var calculatedHeight = (boundingBox.height() * scaleFactor) / imageHeight
-
-                var calculatedCenterX = (boundingBox.centerX() * scaleFactor) / imageWidth
-                var calculatedCenterY = (boundingBox.centerY() * scaleFactor) / imageHeight
-
+                val label = result.categories[0].label
+                val calculatedWidth = (boundingBox.width() * scaleFactor) / imageWidth
+                val calculatedHeight = (boundingBox.height() * scaleFactor) / imageHeight
+                val calculatedCenterX = (boundingBox.centerX() * scaleFactor) / imageWidth
 
                 when (label) {
                     "person" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.5f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
                     "bicycle" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
                     "car" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.4f) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.3f) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.2f) {
-                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
+//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
