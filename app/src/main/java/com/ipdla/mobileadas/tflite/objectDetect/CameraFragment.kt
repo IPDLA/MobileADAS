@@ -245,13 +245,15 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
     private fun detectTrafficSigns(trafficResults: MutableList<Detection>) : Boolean{
         val nonOverlappingList = mutableListOf<Detection>()
+        val nonOverlappingLabelList = mutableListOf<String>()
         val signComparator:Comparator<Detection> = compareBy { it.categories[0].index }
         var newTraffic = ""
 
         //중복되는 표지판은 하나로 취급
         for(result in trafficResults) {
-            if (!newTraffic.contains(result.categories[0].label)) {
-                nonOverlappingList.add(result)
+            if (!nonOverlappingLabelList.contains(result.categories[0].label)) {
+                nonOverlappingList.add(result)                          //이 리스트는 후에 정렬된다.
+                nonOverlappingLabelList.add(result.categories[0].label) //이 리스트는 그저 라벨 확인용. 정렬되지 않음
             }
         }
 

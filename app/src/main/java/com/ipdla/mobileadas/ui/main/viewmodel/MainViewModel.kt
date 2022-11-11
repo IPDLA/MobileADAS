@@ -35,6 +35,8 @@ class MainViewModel : ViewModel() {
     var newTraffic: LiveData<String> = _newTraffic
     private var prevTraffic: String = ""
 
+    private var speedLimit = -1
+
     fun initIsCaution(isCaution: Boolean) {
         _isCaution.postValue(isCaution)
     }
@@ -72,5 +74,12 @@ class MainViewModel : ViewModel() {
     }
     fun getPrevTraffic(): String{
         return prevTraffic
+    }
+
+    fun setSpeedLimit(limit: Int){
+        speedLimit = limit
+    }
+    fun getSpeedLimit(): Int{
+        return speedLimit
     }
 }
