@@ -16,6 +16,7 @@ object BindingAdapters {
                     "instruction_children" -> R.drawable.img_sign_children
                     "instruction_crosswalk" -> R.drawable.img_sign_crosswalk
                     "restriction_speed30" -> R.drawable.img_sign_speed_30
+                    "restriction_speed20" -> R.drawable.img_sign_speed_20
                     else -> null
                 })
                 .into(imageview)

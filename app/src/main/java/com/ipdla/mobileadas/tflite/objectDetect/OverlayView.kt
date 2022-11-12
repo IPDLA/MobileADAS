@@ -26,6 +26,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         "caution_bump",
         "instruction_children",
         "instruction_crosswalk",
+        "restriction_speed20",
         "restriction_speed30")
 
     init {

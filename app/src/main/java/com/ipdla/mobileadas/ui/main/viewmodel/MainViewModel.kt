@@ -71,7 +71,6 @@ class MainViewModel : ViewModel() {
         setSpeedLimit(when (sign) {
             "restriction_speed20" -> 20
             "caution_children", "instruction_children", "restriction_speed30" -> 30
-            "restriction_speed40" -> 40
             else -> 1000
         })
     }
