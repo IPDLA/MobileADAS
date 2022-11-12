@@ -29,7 +29,7 @@ class MainViewModel : ViewModel() {
     private val _trafficSign = MutableLiveData("")
     var trafficSign: LiveData<String> = _trafficSign
 
-    private var timeLeft = 3
+    private var timeLeft = 15
 
     private var speedLimit = 1000
 

@@ -28,8 +28,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.concurrent.timer
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -44,7 +42,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
     private var prevCautionLevel = 0
-    private var timerTask = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +59,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         initCautionLevelObserver()
         initIsSoundOnObserver()
         initDistanceObserver()
-        initTrafficSignObserver()
     }
 
     private fun initLocationCallback() {
@@ -247,23 +243,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 if (distance in 1 until 20) {
                     mainViewModel.initIsGuide(false)
                     showToast(getString(R.string.main_arrival_at_destination))
-                }
-            }
-        }
-    }
-
-    private fun initTrafficSignObserver() {
-        mainViewModel.trafficSign.observe(this) { trafficSign ->
-            if (trafficSign != null) {
-                //표지판이 탐지되었으므로 기존 timer는 해제하고 재할당
-                mainViewModel.setTime(3)
-                timerTask.cancel()
-                timerTask = timer(period = 1000) {
-                    if (mainViewModel.getTime() == 0)
-                        timerTask.cancel()
-                    val timeLeft = mainViewModel.getTime()
-                    println("$trafficSign/$timeLeft")
-                    mainViewModel.setTime(timeLeft - 1)
                 }
             }
         }

@@ -22,6 +22,7 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.concurrent.timer
 
 class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_camera),
     ObjectDetectionHelper.DetectorListener {
@@ -38,6 +39,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     private var cameraProvider: ProcessCameraProvider? = null
     private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
     private var scaleFactor: Float = 1f
+    private var timerTask = Timer()
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -199,53 +201,35 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
                 when (label) {
                     "person" -> {
-                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f && checkCrashCondition(
+                        if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(3)
-                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(
-                                calculatedCenterX)
-                        ) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
-                            mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
+                            mainViewModel.initCautionLevel(2)
+                        } else if (calculatedWidth > 0.1f && calculatedHeight > 0.2f && checkCrashCondition(
+                                calculatedCenterX)
+                        ) {
                             mainViewModel.initCautionLevel(1)
                         }
                     }
                     "bicycle" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
                     "car" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.4f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.3f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.2f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
@@ -257,7 +241,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     }
 
     private fun checkCrashCondition(centerX: Float): Boolean {
-        return centerX > 0.4f && centerX < 0.8f
+        return centerX > 0.35f && centerX < 0.75f
     }
 
     private fun detectTrafficSigns(trafficResults: MutableList<Detection>): Boolean {
@@ -277,8 +261,16 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         val sortedList = nonOverlappingList.sortedWith(signComparator)
         if (sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
             mainViewModel.initTrafficSign(sortedList[sortedList.lastIndex].categories[0].label)
-        } else { //탐지한 표지판이 없는 경우 ==> timeLeft는 건들 필요 X
-            mainViewModel.initTrafficSign("")
+            mainViewModel.setTime(15)
+            timerTask.cancel()
+            timerTask = timer(period = 1000) {
+                if (mainViewModel.getTime() == 0) {
+                    mainViewModel.initTrafficSign("")
+                    timerTask.cancel()
+                }
+                val timeLeft = mainViewModel.getTime()
+                mainViewModel.setTime(timeLeft - 1)
+            }
         }
 
         return false
