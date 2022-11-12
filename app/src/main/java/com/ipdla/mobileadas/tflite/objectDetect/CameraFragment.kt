@@ -241,7 +241,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     }
 
     private fun checkCrashCondition(centerX: Float): Boolean {
-        return centerX > 0.35f && centerX < 0.75f
+        return centerX > 0.25f && centerX < 0.75f
     }
 
     private fun detectTrafficSigns(trafficResults: MutableList<Detection>): Boolean {
