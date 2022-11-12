@@ -201,53 +201,35 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
 
                 when (label) {
                     "person" -> {
-                        if (calculatedWidth > 0.4f && calculatedHeight > 0.5f && checkCrashCondition(
+                        if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(3)
-                        } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f && checkCrashCondition(
-                                calculatedCenterX)
-                        ) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
-                            mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f && checkCrashCondition(
                                 calculatedCenterX)
                         ) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
+                            mainViewModel.initCautionLevel(2)
+                        } else if (calculatedWidth > 0.1f && calculatedHeight > 0.2f && checkCrashCondition(
+                                calculatedCenterX)
+                        ) {
                             mainViewModel.initCautionLevel(1)
                         }
                     }
                     "bicycle" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.5f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.4f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.3f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
                     "car" -> {
                         if (calculatedWidth > 0.4f && calculatedHeight > 0.4f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(3)
                         } else if (calculatedWidth > 0.3f && calculatedHeight > 0.3f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(2)
                         } else if (calculatedWidth > 0.2f && calculatedHeight > 0.2f) {
-//                            Toast.makeText(context, result.categories[0].label, Toast.LENGTH_SHORT)
-//                                .show()
                             mainViewModel.initCautionLevel(1)
                         }
                     }
@@ -259,7 +241,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     }
 
     private fun checkCrashCondition(centerX: Float): Boolean {
-        return centerX > 0.4f && centerX < 0.8f
+        return centerX > 0.35f && centerX < 0.75f
     }
 
     private fun detectTrafficSigns(trafficResults: MutableList<Detection>): Boolean {
@@ -279,7 +261,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         val sortedList = nonOverlappingList.sortedWith(signComparator)
         if (sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
             mainViewModel.initTrafficSign(sortedList[sortedList.lastIndex].categories[0].label)
-            mainViewModel.setTime(3)
+            mainViewModel.setTime(15)
             timerTask.cancel()
             timerTask = timer(period = 1000) {
                 if (mainViewModel.getTime() == 0) {
