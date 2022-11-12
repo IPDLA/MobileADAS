@@ -22,6 +22,7 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.concurrent.timer
 
 class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_camera),
     ObjectDetectionHelper.DetectorListener {
@@ -38,6 +39,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     private var cameraProvider: ProcessCameraProvider? = null
     private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
     private var scaleFactor: Float = 1f
+    private var timerTask = Timer()
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -277,8 +279,16 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         val sortedList = nonOverlappingList.sortedWith(signComparator)
         if (sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
             mainViewModel.initTrafficSign(sortedList[sortedList.lastIndex].categories[0].label)
-        } else { //탐지한 표지판이 없는 경우 ==> timeLeft는 건들 필요 X
-            mainViewModel.initTrafficSign("")
+            mainViewModel.setTime(3)
+            timerTask.cancel()
+            timerTask = timer(period = 1000) {
+                if (mainViewModel.getTime() == 0) {
+                    mainViewModel.initTrafficSign("")
+                    timerTask.cancel()
+                }
+                val timeLeft = mainViewModel.getTime()
+                mainViewModel.setTime(timeLeft - 1)
+            }
         }
 
         return false
