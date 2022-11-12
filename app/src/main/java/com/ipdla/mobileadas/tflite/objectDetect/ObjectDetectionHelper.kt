@@ -54,7 +54,7 @@ class ObjectDetectionHelper(
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(2)
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
 
-        val modelName = "traffic.tflite"
+        val modelName = "traffic_el0.tflite"
 
         try {
             trafficDetector =
