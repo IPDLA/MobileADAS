@@ -214,7 +214,7 @@
             android:background="@android:color/transparent"
             android:keepScreenOn="true"
             app:defaultNavHost="true"
-            app:layout_constraintBottom_toTopOf="@+id/layout_map_view"
+            app:layout_constraintDimensionRatio="3:4"
             app:layout_constraintEnd_toStartOf="@+id/iv_main_img_main"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
