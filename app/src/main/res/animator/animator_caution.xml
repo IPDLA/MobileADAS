@@ -4,7 +4,7 @@
 
     <objectAnimator
         android:propertyName="backgroundColor"
-        android:duration="300"
+        android:duration="600"
         android:valueTo="@color/dark_gray"
         android:valueFrom="@color/light_red"
         android:startOffset="0"
