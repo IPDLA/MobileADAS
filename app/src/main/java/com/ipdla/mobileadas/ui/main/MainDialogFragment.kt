@@ -6,21 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import com.ipdla.mobileadas.R
 import com.ipdla.mobileadas.databinding.FragmentMainDialogBinding
-import com.ipdla.mobileadas.ui.main.viewmodel.MainViewModel
 
 class MainDialogFragment(private val doAfterConfirm: () -> Unit) : DialogFragment() {
     private var _binding: FragmentMainDialogBinding? = null
     private val binding get() = _binding ?: error("바인딩 에러")
-    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_main_dialog, container, false)
         return binding.root

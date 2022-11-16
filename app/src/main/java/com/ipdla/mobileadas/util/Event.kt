@@ -1,8 +1,7 @@
 package com.ipdla.mobileadas.util
 
 open class Event<out T>(private val content: T) {
-    var hasBeenHandled = false
-        private set
+    private var hasBeenHandled = false
 
     fun getContentIfNotHandled(): T? {
         return if (hasBeenHandled) {
@@ -12,6 +11,4 @@ open class Event<out T>(private val content: T) {
             content
         }
     }
-
-    fun peekContent(): T = content
 }

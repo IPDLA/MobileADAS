@@ -82,6 +82,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         tMapView.setLocationPoint(lastTMapPoint.longitude,
             lastTMapPoint.latitude)
 
+        @Suppress("BlockingMethodInNonBlockingContext")
         CoroutineScope(Dispatchers.IO).launch {
             delay(FIND_PATH_DELAY)
             // 보행자 경로 안내
