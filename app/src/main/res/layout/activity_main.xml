@@ -208,7 +208,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_container"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:name="com.ipdla.mobileadas.tflite.objectDetect.CameraFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@android:color/transparent"
