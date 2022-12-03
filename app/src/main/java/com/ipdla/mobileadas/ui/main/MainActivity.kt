@@ -49,6 +49,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
         initLocationCallback()
         initLocationRequest()
+        requestCameraPermission()
         initFusedLocationClient()
         initActivityResultLauncher()
         initGuideBtnClickListener()
@@ -116,9 +117,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
             || ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
         ) {
             ActivityCompat.requestPermissions(
                 this,
@@ -130,6 +131,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         fusedLocationClient.requestLocationUpdates(locationRequest,
             locationCallback,
             Looper.getMainLooper())
+    }
+
+    private fun requestCameraPermission() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CAMERA_PERMISSION
+            )
+        }
     }
 
     private fun initActivityResultLauncher() {
@@ -259,7 +272,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode != REQUEST_LOCATION_PERMISSION) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            exitProcess(0)
+        }
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
             exitProcess(0)
         }
     }
@@ -276,6 +292,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     companion object {
         const val REQUEST_LOCATION_PERMISSION = 0
+        const val REQUEST_CAMERA_PERMISSION = 1
         const val METER_PER_SEC_TO_KILOMETER_PER_HOUR = 3600 / 1000
         const val SPEED_CORRECTION_VALUE = 1.35
         const val LOCATION_REQUEST_INTERVAL = 100L
