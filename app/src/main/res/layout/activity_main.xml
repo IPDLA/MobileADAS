@@ -217,9 +217,7 @@
             app:layout_constraintDimensionRatio="3:4"
             app:layout_constraintEnd_toStartOf="@+id/iv_main_img_main"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navGraph="@navigation/nav_graph"
-            tools:context=".MainActivity" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
