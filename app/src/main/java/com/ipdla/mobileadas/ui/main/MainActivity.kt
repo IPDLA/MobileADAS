@@ -117,17 +117,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
             || ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            || ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
         ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.CAMERA),
+                    Manifest.permission.ACCESS_COARSE_LOCATION),
                 REQUEST_LOCATION_PERMISSION
             )
         }
@@ -138,12 +135,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     private fun requestCameraPermission() {
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED
         ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.CAMERA),
-                REQUEST_LOCATION_PERMISSION
+                REQUEST_CAMERA_PERMISSION
             )
         }
     }
@@ -275,10 +272,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode != REQUEST_LOCATION_PERMISSION) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
             exitProcess(0)
         }
-        if (requestCode != REQUEST_CAMERA_PERMISSION) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
             exitProcess(0)
         }
     }
