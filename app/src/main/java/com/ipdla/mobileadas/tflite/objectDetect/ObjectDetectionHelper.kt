@@ -20,6 +20,7 @@ class ObjectDetectionHelper(
 
     fun clearObjectDetector() {
         objectDetector = null
+
     }
     fun clearTrafficDetector() {
         trafficDetector = null
