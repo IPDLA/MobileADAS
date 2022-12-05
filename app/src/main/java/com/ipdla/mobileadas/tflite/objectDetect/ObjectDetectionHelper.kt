@@ -49,12 +49,12 @@ class ObjectDetectionHelper(
     fun setTrafficDetector(){
         val optionsBuilder =
             ObjectDetector.ObjectDetectorOptions.builder()
-                .setScoreThreshold(0.8f)
+                .setScoreThreshold(0.6f)
                 .setMaxResults(3)
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(2)
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
 
-        val modelName = "traffic_el0.tflite"
+        val modelName = "traffic_el0_new.tflite"
 
         try {
             trafficDetector =
