@@ -24,14 +24,14 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         "bicycle",
         "truck",
         "restriction_speed20",
-        "caution_children",
-        "instruction_children",
         "restriction_speed30",
-        "caution_crosswalk",
-        "instruction_crosswalk",
-        "instruction_people_only",
+        "caution_bump",
         "caution_danger",
-        "caution_bump")
+        "caution_children",
+        "caution_crosswalk",
+        "instruction_children",
+        "instruction_crosswalk",
+        "instruction_people_only")
 
     init {
         initPaints()
