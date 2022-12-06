@@ -1,5 +1,0 @@
-caution_bump
-instruction_crosswalk
-restriction_speed30
-restriction_speed20
-instruction_children
