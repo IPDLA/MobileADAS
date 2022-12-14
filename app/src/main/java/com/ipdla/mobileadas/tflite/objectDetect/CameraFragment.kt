@@ -260,7 +260,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
         //표지판의 우선순위에 따라 정렬
         val sortedList = nonOverlappingList.sortedWith(signComparator)
         if (sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
-            mainViewModel.initTrafficSign(sortedList[sortedList.lastIndex].categories[0].label)
+            mainViewModel.initTrafficSign(sortedList[0].categories[0].label)
             mainViewModel.setTime(15)
             timerTask.cancel()
             timerTask = timer(period = 1000) {
