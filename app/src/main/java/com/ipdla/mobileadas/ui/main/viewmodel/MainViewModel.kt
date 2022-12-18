@@ -30,6 +30,8 @@ class MainViewModel : ViewModel() {
     var trafficSign: LiveData<String> = _trafficSign
 
     private var timeLeft = 15
+    private var sameSignLeft = 5 //0.5초간 같은 것 감지 시
+    private var tempTrafficSign = ""
 
     private var speedLimit = 1000
 
@@ -81,6 +83,21 @@ class MainViewModel : ViewModel() {
 
     fun getTime(): Int {
         return timeLeft
+    }
+
+    fun setSameSign(time: Int){
+        sameSignLeft = time
+    }
+
+    fun getSameSign(): Int{
+        return sameSignLeft
+    }
+
+    fun setTempSign(sign: String){
+        tempTrafficSign = sign
+    }
+    fun getTempSign(): String{
+        return tempTrafficSign
     }
 
     private fun setSpeedLimit(limit: Int) {

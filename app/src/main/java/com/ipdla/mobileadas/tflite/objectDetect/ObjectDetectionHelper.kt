@@ -50,7 +50,7 @@ class ObjectDetectionHelper(
     fun setTrafficDetector(){
         val optionsBuilder =
             ObjectDetector.ObjectDetectorOptions.builder()
-                .setScoreThreshold(0.8f)
+                .setScoreThreshold(0.7f)
                 .setMaxResults(3)
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(2)
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())

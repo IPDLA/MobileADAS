@@ -40,6 +40,7 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
     private var targetList = listOf("person", "car", "laptop", "bus", "bicycle", "truck")
     private var scaleFactor: Float = 1f
     private var timerTask = Timer()
+    private var timerTask2 = Timer()
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
@@ -256,20 +257,35 @@ class CameraFragment : BaseFragment<FragmentCameraBinding>(R.layout.fragment_cam
                 nonOverlappingLabelList.add(result.categories[0].label) //이 리스트는 그저 라벨 확인용. 정렬되지 않음
             }
         }
-
-        //표지판의 우선순위에 따라 정렬
         val sortedList = nonOverlappingList.sortedWith(signComparator)
         if (sortedList.isNotEmpty()) { //탐지한 표지판이 있는 경우
-            mainViewModel.initTrafficSign(sortedList[0].categories[0].label)
-            mainViewModel.setTime(15)
-            timerTask.cancel()
-            timerTask = timer(period = 1000) {
-                if (mainViewModel.getTime() == 0) {
-                    mainViewModel.initTrafficSign("")
-                    timerTask.cancel()
+            if(mainViewModel.getTempSign() != sortedList[0].categories[0].label) {
+                mainViewModel.setTempSign(sortedList[0].categories[0].label)
+                timerTask.cancel()
+                mainViewModel.setSameSign(5)
+                timerTask = timer(period = 100){
+                    if(mainViewModel.getSameSign() <= 0){
+                        timerTask.cancel()
+
+                    }
+                    mainViewModel.setSameSign(mainViewModel.getSameSign() - 1)
                 }
-                val timeLeft = mainViewModel.getTime()
-                mainViewModel.setTime(timeLeft - 1)
+            }
+
+            //같은 표지판을 0.5초간 탐지했을 때, 15초간 출력
+            if(mainViewModel.getSameSign() == 0 && mainViewModel.getTempSign() != "") {
+                timerTask2.cancel()
+                mainViewModel.setSameSign(5)
+                mainViewModel.initTrafficSign(mainViewModel.getTempSign())
+                mainViewModel.setTempSign("")
+                mainViewModel.setTime(15)
+                timerTask2 = timer(period = 1000) {
+                    if (mainViewModel.getTime() == 0) {
+                        mainViewModel.initTrafficSign("")
+                        timerTask2.cancel()
+                    }
+                    mainViewModel.setTime(mainViewModel.getTime() - 1)
+                }
             }
         }
 
