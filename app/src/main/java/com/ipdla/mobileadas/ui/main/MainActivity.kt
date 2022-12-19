@@ -41,7 +41,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
     private lateinit var lastTMapPoint: TMapPoint
     private lateinit var destinationPoint: TMapPoint
     private lateinit var mediaPlayer: MediaPlayer
-    private var prevCautionLevel = 0
+    private var prevCautionLevel = CAUTION_LEVEL_0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,8 +98,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
             tMapPolyLine.lineColor = getColor(R.color.light_blue)
             tMapPolyLine.outLineColor = getColor(R.color.light_blue)
-            tMapPolyLine.lineWidth = 30f
-            tMapPolyLine.outLineWidth = 50f
+            tMapPolyLine.lineWidth = POLYLINE_LINE_WIDTH
+            tMapPolyLine.outLineWidth = POLYLINE_OUTLINE_WIDTH
             mainViewModel.initDistance(tMapPolyLine.distance.toInt())
             tMapView.addTMapPolyLine("Line1", tMapPolyLine)
             tMapView.setCompassMode(true)
@@ -150,9 +150,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == RESULT_OK) {
                     val destination = it.data?.getStringExtra("destination").toString()
-                    val lat = it.data?.getDoubleExtra("latitude", 0.0)
-                    val lon = it.data?.getDoubleExtra("longitude", 0.0)
-                    if (lat != 0.0 && lon != 0.0) destinationPoint = TMapPoint(lat!!, lon!!)
+                    val lat = it.data?.getDoubleExtra("latitude", DEFAULT_DOUBLE_VALUE)
+                    val lon = it.data?.getDoubleExtra("longitude", DEFAULT_DOUBLE_VALUE)
+                    if (lat != DEFAULT_DOUBLE_VALUE && lon != DEFAULT_DOUBLE_VALUE) destinationPoint = TMapPoint(lat!!, lon!!)
                     mainViewModel.initDestination(destination)
                     mainViewModel.initIsGuide(true)
                     initTMapView()
@@ -164,7 +164,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         tMapView = TMapView(this)
         tMapView.setSKTMapApiKey(TMAP_API_KEY)
         tMapView.setIconVisibility(true)
-        tMapView.zoomLevel = 19
+        tMapView.zoomLevel = ZOOM_LEVEL
         tMapView.setUserScrollZoomEnable(true)
         tMapView.setCompassMode(true)
         tMapView.setSightVisible(true)
@@ -177,7 +177,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         binding.btnMainGuide.setOnClickListener {
             if (mainViewModel.isGuide.value == true) {
                 MainDialogFragment {
-                    mainViewModel.initDistance(0)
+                    mainViewModel.initDistance(DEFAULT_DISTANCE)
                     mainViewModel.initIsGuide(false)
                     mainViewModel.initDestination(" - ")
                     binding.layoutMapView.removeView(tMapView)
@@ -212,11 +212,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             }
     }
 
-    private fun initSoundEffect(level: Int = 1) {
+    private fun initSoundEffect(level: Int = CAUTION_LEVEL_1) {
         when (level) {
-            1 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_1)
-            2 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_2)
-            3 -> mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sound_beep_level_3)
+            CAUTION_LEVEL_1 -> mediaPlayer =
+                MediaPlayer.create(applicationContext, R.raw.sound_beep_level_1)
+            CAUTION_LEVEL_2 -> mediaPlayer =
+                MediaPlayer.create(applicationContext, R.raw.sound_beep_level_2)
+            CAUTION_LEVEL_3 -> mediaPlayer =
+                MediaPlayer.create(applicationContext, R.raw.sound_beep_level_3)
         }
     }
 
@@ -232,7 +235,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
 
     private fun initCautionLevelObserver() {
         mainViewModel.cautionLevel.observe(this) { cautionLevel ->
-            if (mainViewModel.isSoundOn.value == true && (cautionLevel == 1 || cautionLevel == 2 || cautionLevel == 3)) {
+            if (mainViewModel.isSoundOn.value == true
+                && (cautionLevel == CAUTION_LEVEL_1
+                        || cautionLevel == CAUTION_LEVEL_2
+                        || cautionLevel == CAUTION_LEVEL_3)
+            ) {
                 if (cautionLevel != prevCautionLevel) {
                     initSoundEffect(cautionLevel)
                     prevCautionLevel = cautionLevel
@@ -247,14 +254,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
             if (isSoundOn) {
                 if (mediaPlayer.isPlaying) mediaPlayer.stop()
             }
-            initSoundEffect(0)
+            initSoundEffect(CAUTION_LEVEL_0)
         }
     }
 
     private fun initDistanceObserver() {
         mainViewModel.distance.observe(this) { distance ->
             if (mainViewModel.isGuide.value == true) {
-                if (distance in 1 until 20) {
+                if (distance < GUIDANCE_DISTANCE_LIMIT) {
                     mainViewModel.initIsGuide(false)
                     showToast(getString(R.string.main_arrival_at_destination))
                 }
@@ -297,5 +304,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         const val SPEED_CORRECTION_VALUE = 1.35
         const val LOCATION_REQUEST_INTERVAL = 100L
         const val FIND_PATH_DELAY = 3600L
+        const val ZOOM_LEVEL = 19
+        const val CAUTION_LEVEL_0 = 0
+        const val CAUTION_LEVEL_1 = 1
+        const val CAUTION_LEVEL_2 = 2
+        const val CAUTION_LEVEL_3 = 3
+        const val GUIDANCE_DISTANCE_LIMIT = 20
+        const val DEFAULT_DOUBLE_VALUE = 0.0
+        const val DEFAULT_DISTANCE = 0
+        const val POLYLINE_LINE_WIDTH = 30f
+        const val POLYLINE_OUTLINE_WIDTH = 50f
     }
 }
